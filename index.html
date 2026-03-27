@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0d0d0f" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Beat the Backlog</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-base:#0d0d0f; --bg-card:#161618; --bg-surface:#1e1e22; --bg-input:#242428;
+      --blue:#3d8ef0; --blue-dim:#2a6abf;
+      --amber:#c97c2a; --amber-bg:rgba(120,65,10,0.35); --amber-border:rgba(180,100,30,0.4);
+      --gold:#c8a030; --gold-bg:rgba(30,24,10,0.75); --gold-border:rgba(180,140,30,0.2);
+      --green:#2e9e5b; --green-bg:rgba(20,90,45,0.35); --green-border:rgba(40,140,70,0.4);
+      --red:#e04444; --red-bg:rgba(180,30,30,0.25);
+      --text-primary:#e8e8ec; --text-secondary:#9090a0; --text-muted:#5a5a6a; --text-dim:#3a3a48;
+      --border:rgba(255,255,255,0.07); --border-bright:rgba(255,255,255,0.13);
+      --radius-sm:6px; --radius-md:10px; --radius-lg:14px;
+      --nav-height:64px; --font-display:'Rajdhani',sans-serif; --font-body:'Inter',sans-serif;
+    }
+    html,body{height:100%;overflow:hidden;background:var(--bg-base);color:var(--text-primary);font-family:var(--font-body);font-size:14px;-webkit-font-smoothing:antialiased;}
+    #app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+
+    /* HEADER */
+    #header{flex-shrink:0;background:var(--bg-base);padding:12px 16px 0;z-index:10;}
+    .header-top{display:flex;align-items:center;justify-content:space-between;height:40px;}
+    .logo{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:1px;line-height:1;}
+    .logo .beat{color:#fff;} .logo .the{color:var(--blue);} .logo .back{color:#fff;}
+    .header-stats{display:flex;gap:12px;align-items:center;}
+    .stat-item{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--text-secondary);}
+    .stat-dot{width:7px;height:7px;border-radius:50%;}
+    .stat-dot.playing{background:var(--blue);box-shadow:0 0 5px var(--blue);}
+    .stat-dot.done{background:var(--green);box-shadow:0 0 5px var(--green);}
+    .stat-dot.queued{background:var(--gold);box-shadow:0 0 5px var(--gold);}
+    .stat-num{color:var(--text-primary);font-weight:600;}
+    .pulse-bar{height:3px;margin-top:10px;border-radius:2px;background:linear-gradient(90deg,var(--blue) 0%,#8b5cf6 40%,#ec4899 70%,var(--amber) 100%);background-size:200% 100%;animation:barPulse 4s ease-in-out infinite;}
+    @keyframes barPulse{0%{background-position:0%;opacity:.7}50%{background-position:100%;opacity:1}100%{background-position:0%;opacity:.7}}
+
+    /* TABS */
+    #tab-content{flex:1;overflow:hidden;position:relative;}
+    .tab-panel{display:none;position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px 12px calc(var(--nav-height) + 12px);}
+    .tab-panel.active{display:block;}
+    .tab-panel::-webkit-scrollbar{width:3px;}
+    .tab-panel::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:2px;}
+
+    /* NAV */
+    #bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-height);background:rgba(13,13,15,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;z-index:100;}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:all .2s;position:relative;border:none;background:none;color:var(--text-muted);-webkit-tap-highlight-color:transparent;}
+    .nav-item svg{width:22px;height:22px;transition:all .2s;}
+    .nav-item span{font-size:10px;font-weight:500;letter-spacing:.3px;transition:all .2s;}
+    .nav-item.active{color:var(--blue);}
+    .nav-item.active::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--blue);border-radius:0 0 3px 3px;box-shadow:0 0 8px var(--blue);}
+    .nav-item.active.tab-wishlist{color:var(--gold);}
+    .nav-item.active.tab-wishlist::before{background:var(--gold);box-shadow:0 0 8px var(--gold);}
+    .nav-item:active{transform:scale(.92);}
+
+    /* INPUTS */
+    .filter-bar{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+    .input-search{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;color:var(--text-primary);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s;}
+    .input-search::placeholder{color:var(--text-muted);}
+    .input-search:focus{border-color:var(--blue-dim);}
+    .filter-row{display:flex;gap:8px;}
+    .select-styled{flex:1;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 12px;color:var(--text-primary);font-family:var(--font-body);font-size:13px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235a5a6a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+    .select-styled:focus{border-color:var(--blue-dim);}
+    .input-num{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 10px;color:var(--text-primary);font-family:var(--font-body);font-size:13px;outline:none;text-align:center;}
+    .input-num:focus{border-color:var(--blue-dim);}
+    .input-num::placeholder{color:var(--text-muted);}
+    .range-row{display:flex;align-items:center;gap:6px;}
+    .range-label{font-size:11px;color:var(--text-muted);white-space:nowrap;}
+    .range-sep{color:var(--text-dim);font-size:13px;}
+
+    /* SECTION HEADERS */
+    .section-header{display:flex;align-items:center;gap:8px;margin:16px 0 10px;font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:.5px;}
+    .section-header svg{width:18px;height:18px;}
+    .section-header.blue{color:var(--blue);} .section-header.green{color:var(--green);}
+    .section-header.red{color:var(--text-muted);} .section-header.gold{color:var(--gold);}
+    .section-divider{height:1px;background:var(--border);margin:18px 0 4px;}
+
+    /* CARDS — SHARED */
+    .card-art{width:87px;min-width:87px;height:100%;overflow:hidden;flex-shrink:0;background:#0a0a0c;}
+    .card-art img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+    .card-art .art-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a20,#0e0e12);color:var(--text-dim);}
+    .card-body{flex:1;padding:8px 10px;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+    .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;flex-shrink:0;}
+    .card-title{font-weight:600;font-size:13.5px;color:var(--text-primary);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .metacritic-badge{flex-shrink:0;background:var(--green);color:#fff;font-size:11px;font-weight:700;padding:2px 6px;border-radius:var(--radius-sm);line-height:1.4;}
+    .metacritic-badge.mid{background:#c0a030;} .metacritic-badge.low{background:var(--red);}
+    .metacritic-badge.none{background:rgba(255,255,255,.08);color:var(--text-muted);}
+    .card-meta-block{flex:1;display:flex;flex-direction:column;justify-content:center;gap:2px;margin:4px 0 2px;overflow:hidden;}
+    .card-meta{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--text-secondary);overflow:hidden;}
+    .card-meta svg{width:10px;height:10px;flex-shrink:0;opacity:.65;}
+    .card-meta span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .meta-sep{color:var(--text-dim);flex-shrink:0;}
+    .card-status-dot{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:500;flex-shrink:0;}
+    .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+    .dot.new{background:var(--text-muted);} .dot.started{background:var(--amber);box-shadow:0 0 4px var(--amber);}
+    .dot.completed{background:var(--green);box-shadow:0 0 4px var(--green);} .dot.abandoned{background:var(--text-dim);}
+    .status-label.new{color:var(--text-muted);} .status-label.started{color:var(--amber);}
+    .status-label.completed{color:var(--green);} .status-label.abandoned{color:var(--text-dim);}
+    .card-actions{display:flex;align-items:center;justify-content:space-between;gap:4px;flex-shrink:0;}
+    .card-actions-left{display:flex;gap:4px;}
+
+    /* BACKLOG CARD */
+    .game-card{display:flex;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:8px;border:1px solid var(--border);height:130px;transition:transform .15s;-webkit-tap-highlight-color:transparent;}
+    .game-card:active{transform:scale(.99);}
+    .game-card.status-new{background:#161618;border-color:rgba(255,255,255,.06);}
+    .game-card.status-started{background:var(--amber-bg);border-color:var(--amber-border);}
+    .game-card.status-completed{background:var(--green-bg);border-color:var(--green-border);}
+    .game-card.status-abandoned{background:#111113;border-color:rgba(255,255,255,.04);}
+    .game-card.status-abandoned .card-body{opacity:.5;}
+
+    /* WISHLIST CARD */
+    .wl-card{display:flex;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:8px;height:130px;transition:transform .15s;-webkit-tap-highlight-color:transparent;background:var(--gold-bg);border:1px solid var(--gold-border);}
+    .wl-card:active{transform:scale(.99);}
+    .wl-card.upcoming{background:rgba(18,18,22,.9);border-color:rgba(255,255,255,.06);}
+    .upcoming-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(100,80,10,.45);border:1px solid rgba(180,140,30,.4);color:var(--gold);font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;flex-shrink:0;white-space:nowrap;}
+    .upcoming-badge svg{width:9px;height:9px;flex-shrink:0;}
+
+    /* SEARCH RESULT CARD */
+    .sr-card{display:flex;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:8px;height:130px;transition:transform .15s;-webkit-tap-highlight-color:transparent;background:#161618;border:1px solid rgba(255,255,255,.07);}
+    .sr-card:active{transform:scale(.99);}
+    .sr-card.in-backlog{border-color:rgba(46,158,91,.3);background:rgba(20,40,28,.6);}
+    .sr-card.in-wishlist{border-color:rgba(180,140,30,.25);background:rgba(28,24,12,.6);}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;gap:3px;padding:4px 9px;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:10.5px;font-weight:600;letter-spacing:.2px;cursor:pointer;border:none;transition:all .15s;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+    .btn:active{transform:scale(.91);}
+    .btn-started{background:rgba(201,124,42,.25);color:#d4903a;border:1px solid rgba(201,124,42,.35);}
+    .btn-done{background:rgba(46,158,91,.25);color:#3ab872;border:1px solid rgba(46,158,91,.35);}
+    .btn-drop{background:rgba(224,68,68,.15);color:#d06060;border:1px solid rgba(224,68,68,.25);}
+    .btn-remove{background:rgba(255,255,255,.07);color:var(--text-muted);border:1px solid rgba(255,255,255,.09);width:26px;height:26px;padding:0;justify-content:center;flex-shrink:0;}
+    .btn-remove:active{background:rgba(224,68,68,.3);color:#d06060;border-color:rgba(224,68,68,.3);}
+    .btn-more{background:transparent;color:var(--text-muted);border:1px solid rgba(255,255,255,.1);font-size:10.5px;}
+    .btn-more svg{width:10px;height:10px;}
+    .btn-started.active{background:var(--amber);color:#fff;border-color:var(--amber);box-shadow:0 0 7px rgba(201,124,42,.4);}
+    .btn-done.active{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 0 7px rgba(46,158,91,.4);}
+    .btn-drop.active{background:var(--red);color:#fff;border-color:var(--red);}
+    .btn-to-backlog{background:rgba(61,142,240,.15);color:#5a9ef5;border:1px solid rgba(61,142,240,.28);}
+    .btn-to-backlog:active{background:rgba(61,142,240,.3);}
+    .btn-add-backlog{background:rgba(61,142,240,.15);color:#5a9ef5;border:1px solid rgba(61,142,240,.28);}
+    .btn-add-backlog:active{background:rgba(61,142,240,.3);}
+    .btn-add-wishlist{background:rgba(180,140,30,.15);color:#c8a030;border:1px solid rgba(180,140,30,.28);}
+    .btn-add-wishlist:active{background:rgba(180,140,30,.3);}
+    .btn-added{background:rgba(255,255,255,.06);color:var(--text-muted);border:1px solid rgba(255,255,255,.1);cursor:default;}
+    .btn-search-primary{flex:1;background:var(--blue);color:#fff;border:none;padding:11px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;}
+    .btn-search-primary:active{transform:scale(.98);background:var(--blue-dim);}
+    .btn-search-primary svg{width:16px;height:16px;}
+    .btn-clear{background:rgba(255,255,255,.07);color:var(--text-secondary);border:1px solid rgba(255,255,255,.1);padding:11px 16px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;}
+    .btn-clear:active{background:rgba(255,255,255,.12);}
+    .btn-clear svg{width:14px;height:14px;}
+
+    /* TAGS */
+    .tags-section{margin:4px 0;}
+    .tags-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-md);padding:9px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .2s;}
+    .tags-toggle:active{background:rgba(255,255,255,.05);}
+    .tags-toggle-left{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--text-secondary);}
+    .tags-toggle-left svg{width:13px;height:13px;opacity:.7;}
+    .tags-toggle-right{display:flex;align-items:center;gap:6px;}
+    .tags-active-badge{background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;line-height:1.5;}
+    .tags-chevron{width:16px;height:16px;color:var(--text-muted);transition:transform .25s ease;}
+    .tags-chevron.open{transform:rotate(180deg);}
+    .tags-panel{max-height:0;overflow:hidden;transition:max-height .3s ease, padding .3s ease;padding:0 2px;}
+    .tags-panel.open{max-height:400px;padding:10px 2px 2px;}
+    .tags-wrap{display:flex;flex-wrap:wrap;gap:6px;}
+    .tag-chip{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--text-secondary);transition:all .15s;-webkit-tap-highlight-color:transparent;}
+    .tag-chip.active{background:rgba(61,142,240,.2);color:var(--blue);border-color:rgba(61,142,240,.4);}
+    .tag-chip:active{transform:scale(.95);}
+
+    /* SEARCH RESULTS META */
+    .results-meta{font-size:11px;color:var(--text-muted);margin-bottom:4px;padding:0 2px;}
+
+    /* LOADING */
+    .search-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;gap:14px;color:var(--text-muted);}
+    .spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{font-size:13px;}
+
+    /* EMPTY / ERROR */
+    .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;color:var(--text-muted);text-align:center;gap:10px;}
+    .empty-state svg{width:40px;height:40px;opacity:.3;}
+    .empty-state p{font-size:13px;line-height:1.5;}
+    .error-state{background:rgba(180,30,30,.18);border:1px solid rgba(224,68,68,.25);border-radius:var(--radius-md);padding:12px 14px;margin:8px 0;font-size:12px;color:#e08888;line-height:1.5;}
+
+    /* SETTINGS */
+    .settings-section{margin-bottom:24px;}
+    .settings-title{font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--blue);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+    .settings-title svg{width:16px;height:16px;}
+    .settings-field{margin-bottom:10px;}
+    .settings-label{font-size:11px;font-weight:600;color:var(--text-secondary);letter-spacing:.4px;margin-bottom:5px;display:block;}
+    .settings-hint{font-size:10.5px;color:var(--text-muted);margin-top:3px;line-height:1.4;}
+    .input-key{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;color:var(--text-primary);font-family:monospace;font-size:13px;outline:none;transition:border-color .2s;}
+    .input-key:focus{border-color:var(--blue-dim);}
+    .input-key::placeholder{color:var(--text-muted);font-family:var(--font-body);}
+    .btn-save{background:var(--blue);color:#fff;border:none;padding:10px 20px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;}
+    .btn-save:active{background:var(--blue-dim);transform:scale(.98);}
+    .btn-save svg{width:14px;height:14px;}
+    .btn-danger{background:rgba(224,68,68,.15);color:#d06060;border:1px solid rgba(224,68,68,.25);padding:10px 16px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;}
+    .btn-danger:active{background:rgba(224,68,68,.3);}
+    .btn-danger svg{width:14px;height:14px;}
+    .key-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px;margin-top:6px;}
+    .key-status.saved{background:rgba(46,158,91,.15);color:#3ab872;border:1px solid rgba(46,158,91,.25);}
+    .key-status.missing{background:rgba(255,255,255,.05);color:var(--text-muted);border:1px solid rgba(255,255,255,.08);}
+    .settings-divider{height:1px;background:var(--border);margin:20px 0;}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:calc(var(--nav-height) + 12px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg-surface);border:1px solid var(--border-bright);color:var(--text-primary);padding:9px 18px;border-radius:20px;font-size:12px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:200;white-space:nowrap;}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+    .hidden{display:none!important;}
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <header id="header">
+    <div class="header-top">
+      <div class="logo"><span class="beat">BEAT </span><span class="the">THE </span><span class="back">BACKLOG</span></div>
+      <div class="header-stats">
+        <div class="stat-item"><span class="stat-dot playing"></span><span class="stat-num" id="stat-playing">0</span><span>playing</span></div>
+        <div class="stat-item"><span class="stat-dot done"></span><span class="stat-num" id="stat-done">0</span><span>done</span></div>
+        <div class="stat-item"><span class="stat-dot queued"></span><span class="stat-num" id="stat-queued">0</span><span>queued</span></div>
+      </div>
+    </div>
+    <div class="pulse-bar"></div>
+  </header>
+
+  <div id="tab-content">
+
+    <!-- BACKLOG -->
+    <div class="tab-panel active" id="panel-backlog">
+      <div class="filter-bar">
+        <input class="input-search" id="backlog-search" type="search" placeholder="Filter by title..." />
+        <div class="filter-row">
+          <select class="select-styled" id="backlog-status-filter">
+            <option value="all">All Active</option>
+            <option value="new">Not Started</option>
+            <option value="started">Started</option>
+            <option value="completed">Completed</option>
+            <option value="abandoned">Abandoned</option>
+          </select>
+          <select class="select-styled" id="backlog-sort">
+            <option value="added">Date Added</option>
+            <option value="title">Title</option>
+            <option value="metacritic">Metacritic</option>
+          </select>
+        </div>
+      </div>
+      <div id="backlog-list"></div>
+    </div>
+
+    <!-- WISHLIST -->
+    <div class="tab-panel" id="panel-wishlist">
+      <div class="filter-bar">
+        <input class="input-search" id="wl-search" type="search" placeholder="Filter by title..." />
+        <div class="filter-row">
+          <select class="select-styled" id="wl-genre-filter"><option value="all">Any Genre</option></select>
+          <select class="select-styled" id="wl-platform-filter"><option value="all">Any Platform</option></select>
+        </div>
+        <select class="select-styled" id="wl-sort">
+          <option value="added">Date Added</option>
+          <option value="release">Release Date</option>
+          <option value="title">Title</option>
+        </select>
+      </div>
+      <div id="wishlist-list"></div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="tab-panel" id="panel-search">
+      <div class="filter-bar">
+        <input class="input-search" id="sr-keyword" type="search" placeholder="Search games..." />
+        <div class="filter-row">
+          <select class="select-styled" id="sr-platform">
+            <option value="">Any Platform</option>
+            <optgroup label="Current Gen">
+              <option value="pc">PC</option>
+              <option value="playstation5">PlayStation 5</option>
+              <option value="xbox-series-x">Xbox Series X/S</option>
+              <option value="nintendo-switch">Nintendo Switch</option>
+              <option value="android">Android</option>
+              <option value="ios">iOS</option>
+              <option value="macos">macOS</option>
+              <option value="linux">Linux</option>
+            </optgroup>
+            <optgroup label="7th / 8th Gen">
+              <option value="playstation4">PlayStation 4</option>
+              <option value="xbox-one">Xbox One</option>
+              <option value="ps3">PlayStation 3</option>
+              <option value="xbox360">Xbox 360</option>
+              <option value="wii-u">Wii U</option>
+              <option value="wii">Wii</option>
+              <option value="ps-vita">PS Vita</option>
+              <option value="3ds">Nintendo 3DS</option>
+              <option value="nintendo-ds">Nintendo DS</option>
+              <option value="psp">PSP</option>
+            </optgroup>
+            <optgroup label="6th Gen">
+              <option value="playstation2">PlayStation 2</option>
+              <option value="xbox">Xbox (Original)</option>
+              <option value="gamecube">GameCube</option>
+              <option value="dreamcast">Dreamcast</option>
+              <option value="game-boy-advance">Game Boy Advance</option>
+            </optgroup>
+            <optgroup label="5th Gen">
+              <option value="playstation">PlayStation 1</option>
+              <option value="nintendo-64">Nintendo 64</option>
+              <option value="sega-saturn">Sega Saturn</option>
+              <option value="game-boy-color">Game Boy Color</option>
+              <option value="game-boy">Game Boy</option>
+            </optgroup>
+            <optgroup label="Classic">
+              <option value="snes">Super Nintendo (SNES)</option>
+              <option value="genesis">Sega Mega Drive / Genesis</option>
+              <option value="nes">NES</option>
+              <option value="sega-master-system">Sega Master System</option>
+              <option value="atari-2600">Atari 2600</option>
+              <option value="commodore-amiga">Commodore / Amiga</option>
+              <option value="arcade">Arcade</option>
+            </optgroup>
+          </select>
+          <select class="select-styled" id="sr-genre">
+            <option value="">Any Genre</option>
+            <option value="action">Action</option>
+            <option value="adventure">Adventure</option>
+            <option value="arcade">Arcade</option>
+            <option value="card">Card / Board</option>
+            <option value="family">Family</option>
+            <option value="fighting">Fighting</option>
+            <option value="indie">Indie</option>
+            <option value="massively-multiplayer">Massively Multiplayer</option>
+            <option value="platformer">Platformer</option>
+            <option value="puzzle">Puzzle</option>
+            <option value="racing">Racing</option>
+            <option value="rpg">RPG</option>
+            <option value="shooter">Shooter</option>
+            <option value="simulation">Simulation</option>
+            <option value="sports">Sports</option>
+            <option value="strategy">Strategy</option>
+          </select>
+        </div>
+        <div class="filter-row">
+          <div class="range-row" style="flex:1">
+            <span class="range-label">Metacritic</span>
+            <input class="input-num" id="sr-mc-min" type="number" placeholder="Min" min="0" max="100" />
+            <span class="range-sep">-</span>
+            <input class="input-num" id="sr-mc-max" type="number" placeholder="Max" min="0" max="100" />
+          </div>
+          <div class="range-row" style="flex:1">
+            <span class="range-label">Year</span>
+            <input class="input-num" id="sr-year-from" type="number" placeholder="From" min="1970" max="2030" />
+            <span class="range-sep">-</span>
+            <input class="input-num" id="sr-year-to" type="number" placeholder="To" min="1970" max="2030" />
+          </div>
+        </div>
+        <div class="tags-section">
+          <button class="tags-toggle" id="tags-toggle" onclick="toggleTagsPanel()">
+            <span class="tags-toggle-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+              Tags
+            </span>
+            <span class="tags-toggle-right">
+              <span id="tags-active-count" class="tags-active-badge hidden">0</span>
+              <svg class="tags-chevron" id="tags-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="tags-panel" id="tags-panel">
+            <div class="tags-wrap" id="tag-chips"></div>
+          </div>
+        </div>
+        <div class="filter-row">
+          <button class="btn-search-primary" id="btn-do-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            Search
+          </button>
+          <button class="btn-clear" id="btn-clear-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Clear
+          </button>
+        </div>
+      </div>
+      <div id="search-results"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="tab-panel" id="panel-settings">
+
+      <div class="settings-section">
+        <div class="settings-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          API Keys
+        </div>
+
+        <div class="settings-field">
+          <label class="settings-label">RAWG API KEY (Primary Search)</label>
+          <input class="input-key" id="key-rawg" type="password" placeholder="Paste your RAWG key here..." autocomplete="off" />
+          <div class="settings-hint">Free key at <strong>rawg.io/apidocs</strong> — no credit card needed.</div>
+          <div id="rawg-status"></div>
+        </div>
+
+        <div class="settings-field">
+          <label class="settings-label">IGDB CLIENT ID</label>
+          <input class="input-key" id="key-igdb-id" type="password" placeholder="Twitch / IGDB Client ID..." autocomplete="off" />
+          <div class="settings-hint">Register at <strong>dev.twitch.tv</strong> to get Client ID + Secret.</div>
+        </div>
+
+        <div class="settings-field">
+          <label class="settings-label">IGDB CLIENT SECRET</label>
+          <input class="input-key" id="key-igdb-secret" type="password" placeholder="Twitch / IGDB Client Secret..." autocomplete="off" />
+          <div id="igdb-status"></div>
+        </div>
+
+        <button class="btn-save" id="btn-save-keys">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Keys
+        </button>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <div class="settings-section">
+        <div class="settings-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+          Data & Cache
+        </div>
+        <div class="settings-field">
+          <div class="settings-hint" style="margin-bottom:10px">Clear the image URL cache to free up storage. Your backlog and wishlist data will not be affected.</div>
+          <button class="btn-danger" id="btn-clear-cache">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg>
+            Clear Image Cache
+          </button>
+        </div>
+        <div class="settings-field">
+          <div class="settings-hint" style="margin-bottom:10px;color:#c87070;">Danger zone: permanently deletes all your backlog and wishlist data.</div>
+          <button class="btn-danger" id="btn-clear-all">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            Reset All Data
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /tab-content -->
+
+  <nav id="bottom-nav">
+    <button class="nav-item active" data-tab="backlog">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Backlog</span>
+    </button>
+    <button class="nav-item tab-wishlist" data-tab="wishlist">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+      <span>Wishlist</span>
+    </button>
+    <button class="nav-item" data-tab="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <span>Search</span>
+    </button>
+    <button class="nav-item" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M2 12h2m16 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+</div>
+<div id="toast"></div>
+
+<script>
+// =============================================
+// DATA LAYER
+// =============================================
+const DB = {
+  get backlog()         { return JSON.parse(localStorage.getItem('btb_backlog') || '[]'); },
+  set backlog(v)        { localStorage.setItem('btb_backlog', JSON.stringify(v)); },
+  get wishlist()        { return JSON.parse(localStorage.getItem('btb_wishlist') || '[]'); },
+  set wishlist(v)       { localStorage.setItem('btb_wishlist', JSON.stringify(v)); },
+  get rawgKey()         { return localStorage.getItem('btb_rawg_key') || ''; },
+  set rawgKey(v)        { localStorage.setItem('btb_rawg_key', v); },
+  get igdbClientId()    { return localStorage.getItem('btb_igdb_id') || ''; },
+  set igdbClientId(v)   { localStorage.setItem('btb_igdb_id', v); },
+  get igdbSecret()      { return localStorage.getItem('btb_igdb_secret') || ''; },
+  set igdbSecret(v)     { localStorage.setItem('btb_igdb_secret', v); },
+  get imgCache()        { return JSON.parse(localStorage.getItem('btb_img_cache') || '{}'); },
+  set imgCache(v)       { localStorage.setItem('btb_img_cache', JSON.stringify(v)); },
+};
+
+// =============================================
+// SEED DATA — only runs on genuine first install
+// Uses a separate flag so emptying your lists
+// doesn't trigger a re-seed on next load.
+// =============================================
+function seedData() {
+  if (localStorage.getItem('btb_seeded')) return; // already initialised — never re-seed
+  localStorage.setItem('btb_seeded', '1');
+  if (DB.backlog.length === 0) {
+    DB.backlog = [
+      { id:'s1', title:'Final Fantasy XVI',    platform:'PC, PlayStation 5',                   genre:'Action, RPG',        releaseDate:'2023-06-22', metacritic:88, status:'started',   addedAt:Date.now()-6e6, art:'https://media.rawg.io/media/games/da8/da84e08a5f1c1adccbdebcc8e4e30e63.jpg' },
+      { id:'s2', title:'Ghost of Tsushima',    platform:'PC, PlayStation 5, PlayStation 4',    genre:'Adventure, Action, RPG',releaseDate:'2020-07-17',metacritic:83, status:'started',   addedAt:Date.now()-5e6, art:'https://media.rawg.io/media/games/f55/f558e1c10a26a7a7cca73b4e817cba50.jpg' },
+      { id:'s3', title:'God of War: Ragnar\u00f6k',platform:'PC, PlayStation 5, PlayStation 4',genre:'Action',              releaseDate:'2022-11-09', metacritic:94, status:'started',   addedAt:Date.now()-4e6, art:'https://media.rawg.io/media/games/fc7/fc70b3c82753dcae35e13e18e879e683.jpg' },
+      { id:'s4', title:'Hogwarts Legacy',       platform:'PC, PlayStation 5, Xbox One',         genre:'Action, RPG',        releaseDate:'2023-02-10', metacritic:84, status:'new',       addedAt:Date.now()-3e6, art:'https://media.rawg.io/media/games/f24/f2493a0f4ac9c1f5fc31a05e56a7eb35.jpg' },
+      { id:'s5', title:'Lies of P',             platform:'PC, PlayStation 5, Xbox Series S/X',  genre:'Action, RPG',        releaseDate:'2023-09-19', metacritic:80, status:'new',       addedAt:Date.now()-2e6, art:'https://media.rawg.io/media/games/d11/d116f1b08fb60d81dc64af1aa1e7cb5f.jpg' },
+      { id:'s6', title:'Elden Ring',            platform:'PC, PlayStation 5, Xbox Series S/X',  genre:'Action, RPG',        releaseDate:'2022-02-25', metacritic:96, status:'completed', addedAt:Date.now()-9e6, art:'https://media.rawg.io/media/games/b29/b294fdd866dcdb643e7bab370a552855.jpg' },
+      { id:'s7', title:'Cyberpunk 2077',        platform:'PC, PlayStation 5, Xbox Series S/X',  genre:'Action, RPG',        releaseDate:'2020-12-10', metacritic:86, status:'completed', addedAt:Date.now()-8e6, art:'https://media.rawg.io/media/games/26d/26d4437715bee60138dab4a7c8c59c92.jpg' },
+      { id:'s8', title:'Forspoken',             platform:'PC, PlayStation 5',                   genre:'Action, RPG',        releaseDate:'2023-01-24', metacritic:67, status:'abandoned', addedAt:Date.now()-1e6, art:'https://media.rawg.io/media/games/98a/98a468a3ac9ddb1e7b09f9b6c34f87f8.jpg' },
+    ];
+  }
+  if (DB.wishlist.length === 0) {
+    DB.wishlist = [
+      { id:'w1', title:"Marvel's Wolverine",           platform:'PlayStation 5',                          genre:'Action',         releaseDate:'2026-09-15', metacritic:null, upcoming:true,  addedAt:Date.now()-5e5, art:'https://media.rawg.io/media/games/5a4/5a44112251d70a25291cc33757220fce.jpg' },
+      { id:'w2', title:'Control Resonant',             platform:'PC, PlayStation 5, Xbox Series S/X',    genre:'Adventure, Action',releaseDate:'2026-12-31',metacritic:null, upcoming:true,  addedAt:Date.now()-4e5, art:'https://media.rawg.io/media/games/5bb/5bb55ccb8205901b7b4a3913d7f3f824.jpg' },
+      { id:'w3', title:'Resident Evil 9: Requiem',     platform:'PC, PlayStation 5, Xbox Series S/X',    genre:'Action, Horror', releaseDate:'2026-02-27', metacritic:null, upcoming:false, addedAt:Date.now()-3e5, art:'https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg' },
+      { id:'w4', title:'Clair Obscur: Expedition 33',  platform:'PC, PlayStation 5, Xbox Series S/X',    genre:'RPG',            releaseDate:'2025-04-24', metacritic:91,   upcoming:false, addedAt:Date.now()-2e5, art:'https://media.rawg.io/media/games/5eb/5eb49a5e4f4d3a69b37b1b5a6e3a57b3.jpg' },
+      { id:'w5', title:'Alan Wake 2',                  platform:'PC, PlayStation 5, Xbox Series S/X',    genre:'Action, Horror', releaseDate:'2023-10-27', metacritic:89,   upcoming:false, addedAt:Date.now()-1e5, art:'https://media.rawg.io/media/games/c8a/c8a85a8c6d59d9e0b3a02ef63ce9d9af.jpg' },
+    ];
+  }
+}
+
+// =============================================
+// UTILITIES
+// =============================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function mcClass(score) {
+  if (!score) return 'none';
+  return score >= 80 ? '' : score >= 60 ? 'mid' : 'low';
+}
+
+function learnMoreURL(title) {
+  return 'https://www.google.com/search?q=' + encodeURIComponent(title + ' game');
+}
+
+function isUpcoming(game) {
+  if (game.upcoming) return true;
+  if (!game.releaseDate) return true;
+  return new Date(game.releaseDate) > new Date();
+}
+
+function uid() { return 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+const ICONS = {
+  platform: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
+  genre:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>',
+  date:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  external: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>',
+  trash:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg>',
+  clock:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  grid:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+  save:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
+  check:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+};
+
+function artImg(url, title) {
+  if (!url) return '<div class="art-placeholder"></div>';
+  return '<img src="' + url + '" alt="' + (title||'').replace(/"/g,'') + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=art-placeholder></div>\'" />';
+}
+
+function platShort(p) {
+  if (!p) return 'Unknown';
+  return p.length > 30 ? p.substring(0, 28) + '\u2026' : p;
+}
+
+// =============================================
+// STATS
+// =============================================
+function updateStats() {
+  const bl = DB.backlog, wl = DB.wishlist;
+  document.getElementById('stat-playing').textContent = bl.filter(g => g.status === 'started').length;
+  document.getElementById('stat-done').textContent    = bl.filter(g => g.status === 'completed').length;
+  document.getElementById('stat-queued').textContent  = wl.length;
+}
+
+// =============================================
+// BACKLOG
+// =============================================
+function renderBacklog() {
+  const container  = document.getElementById('backlog-list');
+  const searchVal  = document.getElementById('backlog-search').value.toLowerCase().trim();
+  const statusFilt = document.getElementById('backlog-status-filter').value;
+  const sortBy     = document.getElementById('backlog-sort').value;
+
+  let games = DB.backlog;
+  if (searchVal) games = games.filter(g => g.title.toLowerCase().includes(searchVal));
+  if (statusFilt !== 'all') games = games.filter(g => g.status === statusFilt);
+  games = [...games].sort((a,b) => {
+    if (sortBy==='title') return a.title.localeCompare(b.title);
+    if (sortBy==='metacritic') return (b.metacritic||0)-(a.metacritic||0);
+    return b.addedAt - a.addedAt;
+  });
+
+  const active    = games.filter(g => g.status==='new'||g.status==='started');
+  const completed = games.filter(g => g.status==='completed');
+  const abandoned = games.filter(g => g.status==='abandoned');
+
+  let html = '';
+  if (statusFilt==='all'||statusFilt==='new'||statusFilt==='started') {
+    if (active.length) { html += '<div class="section-header blue">'+ICONS.grid+' Active ('+active.length+')</div>'; active.forEach(g=>{html+=buildBacklogCard(g);}); }
+  }
+  if (statusFilt==='all'||statusFilt==='completed') {
+    if (completed.length) {
+      if (html) html += '<div class="section-divider"></div>';
+      html += '<div class="section-header green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Completed ('+completed.length+')</div>';
+      completed.forEach(g=>{html+=buildBacklogCard(g);});
+    }
+  }
+  if (statusFilt==='all'||statusFilt==='abandoned') {
+    if (abandoned.length) {
+      if (html) html += '<div class="section-divider"></div>';
+      html += '<div class="section-header red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Abandoned ('+abandoned.length+')</div>';
+      abandoned.forEach(g=>{html+=buildBacklogCard(g);});
+    }
+  }
+  if (!html) html = '<div class="empty-state">'+ICONS.grid+'<p>Your backlog is empty.<br>Search for games to add them.</p></div>';
+  container.innerHTML = html;
+  updateStats();
+}
+
+function buildBacklogCard(g) {
+  const mc = g.metacritic;
+  const mcH = mc ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>' : '<span class="metacritic-badge none">-</span>';
+  const sl = {new:'Not Started',started:'Playing',completed:'Completed',abandoned:'Abandoned'};
+  return '<div class="game-card status-'+g.status+'" data-id="'+g.id+'">' +
+    '<div class="card-art">'+artImg(g.art,g.title)+'</div>' +
+    '<div class="card-body">' +
+      '<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>' +
+      '<div class="card-meta-block">' +
+        '<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>' +
+        '<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'-')+'</span></div>' +
+        '<div class="card-status-dot"><span class="dot '+g.status+'"></span><span class="status-label '+g.status+'">'+sl[g.status]+'</span></div>' +
+      '</div>' +
+      '<div class="card-actions"><div class="card-actions-left">' +
+        '<button class="btn btn-started'+(g.status==='started'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'started\')">Playing</button>' +
+        '<button class="btn btn-done'+(g.status==='completed'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'completed\')">Done</button>' +
+        '<button class="btn btn-drop'+(g.status==='abandoned'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'abandoned\')">Drop</button>' +
+        '<button class="btn btn-remove" onclick="removeFromBacklog(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>' +
+      '</div><a class="btn btn-more" href="'+learnMoreURL(g.title)+'" target="_blank" rel="noopener">'+ICONS.external+' More</a></div>' +
+    '</div></div>';
+}
+
+function setBacklogStatus(id, status) {
+  const bl = DB.backlog, idx = bl.findIndex(g=>g.id===id);
+  if (idx===-1) return;
+  bl[idx].status = bl[idx].status===status ? 'new' : status;
+  DB.backlog = bl; renderBacklog();
+}
+
+function removeFromBacklog(id) {
+  DB.backlog = DB.backlog.filter(g=>g.id!==id);
+  showToast('Removed from backlog'); renderBacklog();
+}
+
+// =============================================
+// WISHLIST
+// =============================================
+function populateWishlistFilters() {
+  const games = DB.wishlist;
+  const genres    = [...new Set(games.flatMap(g=>(g.genre||'').split(',').map(s=>s.trim()).filter(Boolean)))].sort();
+  const platforms = [...new Set(games.flatMap(g=>(g.platform||'').split(',').map(s=>s.trim()).filter(Boolean)))].sort();
+  const gSel=document.getElementById('wl-genre-filter'), pSel=document.getElementById('wl-platform-filter');
+  const gv=gSel.value, pv=pSel.value;
+  gSel.innerHTML='<option value="all">Any Genre</option>'+genres.map(g=>'<option value="'+g+'">'+g+'</option>').join('');
+  pSel.innerHTML='<option value="all">Any Platform</option>'+platforms.map(p=>'<option value="'+p+'">'+p+'</option>').join('');
+  gSel.value=gv; pSel.value=pv;
+}
+
+function renderWishlist() {
+  populateWishlistFilters();
+  const searchVal = document.getElementById('wl-search').value.toLowerCase().trim();
+  const genreFilt = document.getElementById('wl-genre-filter').value;
+  const platFilt  = document.getElementById('wl-platform-filter').value;
+  const sortBy    = document.getElementById('wl-sort').value;
+
+  let games = DB.wishlist;
+  if (searchVal)         games = games.filter(g=>g.title.toLowerCase().includes(searchVal));
+  if (genreFilt!=='all') games = games.filter(g=>(g.genre||'').includes(genreFilt));
+  if (platFilt!=='all')  games = games.filter(g=>(g.platform||'').includes(platFilt));
+  games = [...games].sort((a,b) => {
+    if (sortBy==='title')   return a.title.localeCompare(b.title);
+    if (sortBy==='release') { const da=a.releaseDate?new Date(a.releaseDate):new Date('9999'), db=b.releaseDate?new Date(b.releaseDate):new Date('9999'); return da-db; }
+    return b.addedAt - a.addedAt;
+  });
+
+  const released = games.filter(g=>!isUpcoming(g));
+  const upcoming = games.filter(g=>isUpcoming(g));
+  let html = '';
+
+  if (released.length) {
+    html += '<div class="section-header gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg> Released ('+released.length+')</div>';
+    released.forEach(g=>{html+=buildWishlistCard(g);});
+  }
+  if (upcoming.length) {
+    if (html) html += '<div class="section-divider"></div>';
+    html += '<div class="section-header gold">'+ICONS.clock+' Upcoming ('+upcoming.length+')</div>';
+    upcoming.forEach(g=>{html+=buildWishlistCard(g);});
+  }
+  if (!html) html = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg><p>Your wishlist is empty.<br>Search for games to add them.</p></div>';
+
+  document.getElementById('wishlist-list').innerHTML = html;
+  updateStats();
+}
+
+function buildWishlistCard(g) {
+  const up = isUpcoming(g);
+  const mc = g.metacritic;
+  const mcH = mc ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>'
+                 : (up ? '<span class="upcoming-badge">'+ICONS.clock+'Upcoming</span>' : '<span class="metacritic-badge none">-</span>');
+  const actions = up
+    ? '<button class="btn btn-remove" onclick="removeFromWishlist(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>'
+    : '<button class="btn btn-to-backlog" onclick="moveWishlistToBacklog(\''+g.id+'\')">'+ICONS.grid+' +&nbsp;Backlog</button><button class="btn btn-remove" onclick="removeFromWishlist(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>';
+  return '<div class="wl-card'+(up?' upcoming':'')+'" data-id="'+g.id+'">' +
+    '<div class="card-art">'+artImg(g.art,g.title)+'</div>' +
+    '<div class="card-body">' +
+      '<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>' +
+      '<div class="card-meta-block">' +
+        '<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>' +
+        '<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'Upcoming')+'</span></div>' +
+      '</div>' +
+      '<div class="card-actions"><div class="card-actions-left">'+actions+'</div><a class="btn btn-more" href="'+learnMoreURL(g.title)+'" target="_blank" rel="noopener">'+ICONS.external+' More</a></div>' +
+    '</div></div>';
+}
+
+function removeFromWishlist(id) {
+  DB.wishlist = DB.wishlist.filter(g=>g.id!==id);
+  showToast('Removed from wishlist'); renderWishlist();
+}
+
+function moveWishlistToBacklog(id) {
+  const wl=DB.wishlist, game=wl.find(g=>g.id===id);
+  if (!game) return;
+  const bl=DB.backlog;
+  if (bl.find(g=>g.title===game.title)) { showToast('Already in backlog'); return; }
+  bl.push({...game, id:uid(), status:'new', addedAt:Date.now()});
+  DB.backlog=bl; DB.wishlist=wl.filter(g=>g.id!==id);
+  showToast('\u2713 Moved to backlog!'); renderWishlist();
+}
+
+// =============================================
+// SEARCH — TAGS
+// =============================================
+const TAGS = [
+  // Vibes & Style
+  'Cosy','Relaxing','Dark','Atmospheric','Psychedelic','Anime','Pixel Art','Retro','Minimalist',
+  // Gameplay
+  'Roguelike','Roguelite','Soulslike','Bullet Hell','Metroidvania','Hack and Slash',
+  'Stealth','Survival','Sandbox','Open World','Linear','Narrative','Walking Simulator',
+  'Tower Defense','Turn-based','Real-time','Tactical','Deck-building','Rhythm',
+  'Fishing','Farming','Crafting','Base Building','Exploration','Puzzle',
+  // Multiplayer
+  'Co-op','Local Co-op','Online Multiplayer','PvP','Battle Royale','MMO',
+  // Setting & Tone
+  'Horror','Sci-fi','Fantasy','Post-apocalyptic','Cyberpunk','Noir','Historical',
+  'Space','Underwater','Medieval','Dystopian','Steampunk','Lovecraftian','Superhero',
+  // Meta
+  'Difficult','Casual','Short','Long','Story-rich','Choices Matter','Multiple Endings',
+  'Replay Value','Hidden Gem','Underrated','Speedrun-friendly','Completionist',
+];
+let activeTags = [];
+
+function renderTags() {
+  document.getElementById('tag-chips').innerHTML = TAGS.map(t =>
+    '<button class="tag-chip'+(activeTags.includes(t)?' active':'')+'" onclick="toggleTag(\''+t+'\')">'  +t+'</button>'
+  ).join('');
+  const badge = document.getElementById('tags-active-count');
+  if (activeTags.length > 0) { badge.textContent = activeTags.length; badge.classList.remove('hidden'); }
+  else { badge.classList.add('hidden'); }
+}
+
+function toggleTag(t) {
+  activeTags = activeTags.includes(t) ? activeTags.filter(x=>x!==t) : [...activeTags, t];
+  renderTags();
+}
+
+function toggleTagsPanel() {
+  const panel   = document.getElementById('tags-panel');
+  const chevron = document.getElementById('tags-chevron');
+  panel.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+
+// =============================================
+// SEARCH — RAWG API
+// =============================================
+const RAWG_BASE = 'https://api.rawg.io/api';
+
+function buildRAWGParams() {
+  const key      = DB.rawgKey;
+  const keyword  = document.getElementById('sr-keyword').value.trim();
+  const platform = document.getElementById('sr-platform').value;
+  const genre    = document.getElementById('sr-genre').value;
+  const mcMin    = document.getElementById('sr-mc-min').value;
+  const mcMax    = document.getElementById('sr-mc-max').value;
+  const yearFrom = document.getElementById('sr-year-from').value;
+  const yearTo   = document.getElementById('sr-year-to').value;
+
+  const params = new URLSearchParams();
+  params.set('key', key);
+  params.set('page_size', '20');
+  params.set('ordering', keyword ? '-relevance' : '-metacritic');
+
+  if (keyword)  params.set('search', keyword);
+  if (platform) params.set('platforms', rawgPlatformId(platform));
+  if (genre)    params.set('genres', genre);
+  if (mcMin)    params.set('metacritic', mcMin + ',' + (mcMax || '100'));
+  else if (mcMax) params.set('metacritic', '0,' + mcMax);
+  if (yearFrom || yearTo) {
+    const from = yearFrom ? yearFrom + '-01-01' : '1970-01-01';
+    const to   = yearTo   ? yearTo   + '-12-31' : '2030-12-31';
+    params.set('dates', from + ',' + to);
+  }
+  if (activeTags.length) params.set('tags', activeTags.map(t=>t.toLowerCase().replace(/ /g,'-')).join(','));
+
+  // Include upcoming
+  params.set('upcoming', 'true');
+
+  return params.toString();
+}
+
+// Map slug to RAWG platform IDs
+function rawgPlatformId(slug) {
+  const map = {
+    // Current gen
+    'pc':'4', 'playstation5':'187', 'xbox-series-x':'186', 'nintendo-switch':'7',
+    'android':'21', 'ios':'3', 'macos':'5', 'linux':'6',
+    // 7th/8th gen
+    'playstation4':'18', 'xbox-one':'1', 'ps3':'16', 'xbox360':'14',
+    'wii-u':'10', 'wii':'11', 'ps-vita':'19', '3ds':'8', 'nintendo-ds':'77', 'psp':'17',
+    // 6th gen
+    'playstation2':'15', 'xbox':'80', 'gamecube':'105', 'dreamcast':'74', 'game-boy-advance':'24',
+    // 5th gen
+    'playstation':'27', 'nintendo-64':'83', 'sega-saturn':'75', 'game-boy-color':'43', 'game-boy':'26',
+    // Classic
+    'snes':'79', 'genesis':'167', 'nes':'49', 'sega-master-system':'107',
+    'atari-2600':'28', 'commodore-amiga':'166', 'arcade':'31',
+  };
+  return map[slug] || slug;
+}
+
+async function doSearch() {
+  const key = DB.rawgKey;
+  const resultsEl = document.getElementById('search-results');
+
+  if (!key) {
+    resultsEl.innerHTML = '<div class="error-state">No RAWG API key found. Please add your key in <strong>Settings</strong> first.<br><br>Get a free key at rawg.io/apidocs</div>';
+    return;
+  }
+
+  const keyword = document.getElementById('sr-keyword').value.trim();
+  const hasFilters = keyword || document.getElementById('sr-platform').value || document.getElementById('sr-genre').value ||
+    document.getElementById('sr-mc-min').value || document.getElementById('sr-mc-max').value ||
+    document.getElementById('sr-year-from').value || document.getElementById('sr-year-to').value || activeTags.length;
+
+  if (!hasFilters) {
+    resultsEl.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><p>Enter a keyword or choose filters to search.</p></div>';
+    return;
+  }
+
+  resultsEl.innerHTML = '<div class="search-loading"><div class="spinner"></div><div class="loading-text">Searching games\u2026</div></div>';
+
+  try {
+    const url = RAWG_BASE + '/games?' + buildRAWGParams();
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('RAWG returned ' + res.status);
+    const data = await res.json();
+
+    // Also fetch upcoming separately if no date filter
+    let upcomingResults = [];
+    const yearFrom = document.getElementById('sr-year-from').value;
+    const yearTo   = document.getElementById('sr-year-to').value;
+    if (!yearFrom && !yearTo) {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const future = '2030-12-31';
+        const upParams = new URLSearchParams();
+        upParams.set('key', key);
+        upParams.set('page_size', '5');
+        upParams.set('dates', today + ',' + future);
+        upParams.set('ordering', '-added');
+        if (document.getElementById('sr-keyword').value.trim()) upParams.set('search', document.getElementById('sr-keyword').value.trim());
+        if (document.getElementById('sr-platform').value) upParams.set('platforms', rawgPlatformId(document.getElementById('sr-platform').value));
+        if (document.getElementById('sr-genre').value)    upParams.set('genres', document.getElementById('sr-genre').value);
+        const upRes  = await fetch(RAWG_BASE + '/games?' + upParams.toString());
+        if (upRes.ok) { const upData = await upRes.json(); upcomingResults = (upData.results || []).filter(g=>new Date(g.released)>new Date()); }
+      } catch(e) { /* silently skip upcoming fetch */ }
+    }
+
+    renderSearchResults(data.results || [], upcomingResults, data.count || 0);
+  } catch(err) {
+    resultsEl.innerHTML = '<div class="error-state">Search failed: ' + err.message + '<br><br>Check your API key in Settings, and make sure you have an internet connection.</div>';
+  }
+}
+
+function rawgToGame(r) {
+  const platforms = (r.platforms||[]).map(p=>p.platform.name).join(', ');
+  const genres    = (r.genres||[]).map(g=>g.name).join(', ');
+  return {
+    id:          uid(),
+    rawgId:      r.id,
+    title:       r.name,
+    platform:    platforms,
+    genre:       genres,
+    releaseDate: r.released || null,
+    metacritic:  r.metacritic || null,
+    art:         r.background_image || null,
+    upcoming:    r.released ? new Date(r.released) > new Date() : true,
+    addedAt:     Date.now(),
+  };
+}
+
+function renderSearchResults(released, upcoming, total) {
+  const resultsEl = document.getElementById('search-results');
+  const bl = DB.backlog, wl = DB.wishlist;
+
+  // Deduplicate upcoming from released
+  const relIds = new Set(released.map(r=>r.id));
+  upcoming = upcoming.filter(u=>!relIds.has(u.id));
+
+  let html = '';
+  const relCount = released.length, upCount = upcoming.length;
+
+  html += '<div class="results-meta">Showing '+relCount+' released &middot; '+upCount+' upcoming</div>';
+
+  if (released.length) {
+    html += '<div class="section-header green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Released ('+relCount+')</div>';
+    released.forEach(r => { html += buildSearchCard(rawgToGame(r), bl, wl, false); });
+  }
+  if (upcoming.length) {
+    if (html.includes('section-header')) html += '<div class="section-divider"></div>';
+    html += '<div class="section-header gold">'+ICONS.clock+' Upcoming ('+upCount+')</div>';
+    upcoming.forEach(r => { html += buildSearchCard(rawgToGame(r), bl, wl, true); });
+  }
+  if (!released.length && !upcoming.length) {
+    html += '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><p>No games found.<br>Try different search terms or filters.</p></div>';
+  }
+
+  resultsEl.innerHTML = html;
+}
+
+function buildSearchCard(g, bl, wl, forceUpcoming) {
+  const up = forceUpcoming || isUpcoming(g);
+  const inBL = bl.some(x => x.title === g.title || x.rawgId === g.rawgId);
+  const inWL = wl.some(x => x.title === g.title || x.rawgId === g.rawgId);
+  const mc = g.metacritic;
+  const mcH = mc ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>'
+                 : (up ? '<span class="upcoming-badge">'+ICONS.clock+'Upcoming</span>' : '<span class="metacritic-badge none">-</span>');
+
+  const extra = up ? '' : (inBL ? 'in-backlog' : inWL ? 'in-wishlist' : '');
+  const gJson = JSON.stringify(g).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+
+  const blBtn = up ? '' : (inBL
+    ? '<button class="btn btn-added" disabled>'+ICONS.check+' In Backlog</button>'
+    : '<button class="btn btn-add-backlog" onclick="addSearchToBacklog(\''+g.rawgId+'\',\''+encodeURIComponent(JSON.stringify(g))+'\')">'+ICONS.grid+' +&nbsp;Backlog</button>');
+  const wlBtn = inWL
+    ? '<button class="btn btn-added" disabled>'+ICONS.check+' In Wishlist</button>'
+    : '<button class="btn btn-add-wishlist" onclick="addSearchToWishlist(\''+g.rawgId+'\',\''+encodeURIComponent(JSON.stringify(g))+'\')"><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' style=\'width:10px;height:10px\'><path d=\'M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z\'/></svg> +&nbsp;Wishlist</button>';
+
+  return '<div class="sr-card '+extra+'" data-rawg="'+g.rawgId+'">' +
+    '<div class="card-art">'+artImg(g.art, g.title)+'</div>' +
+    '<div class="card-body">' +
+      '<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>' +
+      '<div class="card-meta-block">' +
+        '<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>' +
+        '<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'TBA')+'</span></div>' +
+      '</div>' +
+      '<div class="card-actions"><div class="card-actions-left">'+blBtn+wlBtn+'</div><a class="btn btn-more" href="'+learnMoreURL(g.title)+'" target="_blank" rel="noopener">'+ICONS.external+' More</a></div>' +
+    '</div></div>';
+}
+
+function addSearchToBacklog(rawgId, encoded) {
+  const g = JSON.parse(decodeURIComponent(encoded));
+  const bl = DB.backlog;
+  if (bl.some(x=>x.title===g.title||x.rawgId===g.rawgId)) { showToast('Already in backlog'); return; }
+  bl.push({...g, status:'new', addedAt:Date.now()});
+  DB.backlog = bl;
+  showToast('\u2713 Added to backlog!');
+  // Refresh cards inline
+  document.querySelectorAll('.sr-card[data-rawg="'+rawgId+'"]').forEach(el => {
+    el.classList.add('in-backlog');
+    const left = el.querySelector('.card-actions-left');
+    if (left) {
+      const blBtn = left.querySelector('.btn-add-backlog');
+      if (blBtn) blBtn.outerHTML = '<button class="btn btn-added" disabled>'+ICONS.check+' In Backlog</button>';
+    }
+  });
+  updateStats();
+}
+
+function addSearchToWishlist(rawgId, encoded) {
+  const g = JSON.parse(decodeURIComponent(encoded));
+  const wl = DB.wishlist;
+  if (wl.some(x=>x.title===g.title||x.rawgId===g.rawgId)) { showToast('Already in wishlist'); return; }
+  wl.push({...g, addedAt:Date.now()});
+  DB.wishlist = wl;
+  showToast('\u2713 Added to wishlist!');
+  document.querySelectorAll('.sr-card[data-rawg="'+rawgId+'"]').forEach(el => {
+    if (!el.classList.contains('in-backlog')) el.classList.add('in-wishlist');
+    const left = el.querySelector('.card-actions-left');
+    if (left) {
+      const wlBtn = left.querySelector('.btn-add-wishlist');
+      if (wlBtn) wlBtn.outerHTML = '<button class="btn btn-added" disabled>'+ICONS.check+' In Wishlist</button>';
+    }
+  });
+  updateStats();
+}
+
+function clearSearch() {
+  document.getElementById('sr-keyword').value = '';
+  document.getElementById('sr-platform').value = '';
+  document.getElementById('sr-genre').value = '';
+  document.getElementById('sr-mc-min').value = '';
+  document.getElementById('sr-mc-max').value = '';
+  document.getElementById('sr-year-from').value = '';
+  document.getElementById('sr-year-to').value = '';
+  activeTags = [];
+  renderTags();
+  // Close tags panel on clear
+  document.getElementById('tags-panel').classList.remove('open');
+  document.getElementById('tags-chevron').classList.remove('open');
+  document.getElementById('search-results').innerHTML = '';
+}
+
+// =============================================
+// SETTINGS
+// =============================================
+function renderSettings() {
+  document.getElementById('key-rawg').value       = DB.rawgKey ? '•'.repeat(20) : '';
+  document.getElementById('key-igdb-id').value    = DB.igdbClientId ? '•'.repeat(20) : '';
+  document.getElementById('key-igdb-secret').value= DB.igdbSecret ? '•'.repeat(20) : '';
+
+  document.getElementById('rawg-status').innerHTML = DB.rawgKey
+    ? '<span class="key-status saved">'+ICONS.check+' Key saved</span>'
+    : '<span class="key-status missing">No key set</span>';
+  document.getElementById('igdb-status').innerHTML = DB.igdbClientId && DB.igdbSecret
+    ? '<span class="key-status saved">'+ICONS.check+' Keys saved</span>'
+    : '<span class="key-status missing">No keys set</span>';
+}
+
+document.getElementById('btn-save-keys').addEventListener('click', () => {
+  const rawg   = document.getElementById('key-rawg').value.trim();
+  const igdbId = document.getElementById('key-igdb-id').value.trim();
+  const igdbSc = document.getElementById('key-igdb-secret').value.trim();
+  // Only update if not masked placeholder
+  if (rawg   && !rawg.startsWith('\u2022'))   DB.rawgKey      = rawg;
+  if (igdbId && !igdbId.startsWith('\u2022')) DB.igdbClientId = igdbId;
+  if (igdbSc && !igdbSc.startsWith('\u2022')) DB.igdbSecret   = igdbSc;
+  renderSettings();
+  showToast('\u2713 Keys saved');
+});
+
+document.getElementById('btn-clear-cache').addEventListener('click', () => {
+  DB.imgCache = {};
+  showToast('Image cache cleared');
+});
+
+document.getElementById('btn-clear-all').addEventListener('click', () => {
+  if (!confirm('This will permanently delete your backlog and wishlist. Are you sure?')) return;
+  DB.backlog = []; DB.wishlist = [];
+  showToast('All data reset');
+  renderBacklog(); renderWishlist(); updateStats();
+});
+
+// Unmask key inputs on focus
+['key-rawg','key-igdb-id','key-igdb-secret'].forEach(id => {
+  document.getElementById(id).addEventListener('focus', function() {
+    if (this.value.startsWith('\u2022')) this.value = '';
+    this.type = 'text';
+  });
+  document.getElementById(id).addEventListener('blur', function() {
+    if (this.value && !this.value.startsWith('\u2022')) {
+      // keep as text so user can see what they typed until save
+    } else if (!this.value) {
+      this.type = 'password';
+    }
+  });
+});
+
+// =============================================
+// TAB NAVIGATION
+// =============================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.querySelector('.nav-item[data-tab="'+tab+'"]').classList.add('active');
+  if (tab==='backlog')  renderBacklog();
+  if (tab==='wishlist') renderWishlist();
+  if (tab==='settings') renderSettings();
+}
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+// Search listeners
+document.getElementById('btn-do-search').addEventListener('click', doSearch);
+document.getElementById('btn-clear-search').addEventListener('click', clearSearch);
+document.getElementById('sr-keyword').addEventListener('keydown', e => { if (e.key==='Enter') doSearch(); });
+document.getElementById('backlog-search').addEventListener('input', renderBacklog);
+document.getElementById('backlog-status-filter').addEventListener('change', renderBacklog);
+document.getElementById('backlog-sort').addEventListener('change', renderBacklog);
+document.getElementById('wl-search').addEventListener('input', renderWishlist);
+document.getElementById('wl-genre-filter').addEventListener('change', renderWishlist);
+document.getElementById('wl-platform-filter').addEventListener('change', renderWishlist);
+document.getElementById('wl-sort').addEventListener('change', renderWishlist);
+
+// =============================================
+// INIT
+// =============================================
+seedData();
+renderTags();
+renderBacklog();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+</script>
+</body>
+</html>

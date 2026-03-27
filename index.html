@@ -464,10 +464,48 @@
 
 
 
+        <div class="settings-field">
+          <label class="settings-label">STEAMGRIDDB API KEY (Box Art)</label>
+          <input class="input-key" id="key-sgdb" type="password" placeholder="Paste your SteamGridDB key here..." autocomplete="off" />
+          <div class="settings-hint">Free key at <strong>steamgriddb.com/api/v2</strong> — improves box art quality in search results.</div>
+          <div id="sgdb-status"></div>
+        </div>
+
         <button class="btn-save" id="btn-save-keys">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           Save Keys
         </button>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <div class="settings-section">
+        <div class="settings-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Backup & Restore
+        </div>
+        <div class="settings-field">
+          <div class="settings-hint" style="margin-bottom:10px">Export your full backlog and wishlist as a JSON file. Use this to back up your data or transfer it to a new device.</div>
+          <button class="btn-save" id="btn-export">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Export Data
+          </button>
+        </div>
+        <div class="settings-field">
+          <div class="settings-hint" style="margin-bottom:10px">Import a previously exported backup file. You can choose to merge with your existing data or replace it entirely.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-save" id="btn-import-merge" onclick="triggerImport('merge')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Import &amp; Merge
+            </button>
+            <button class="btn-save" style="background:var(--blue-dim)" id="btn-import-replace" onclick="triggerImport('replace')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Import &amp; Replace
+            </button>
+          </div>
+          <input type="file" id="import-file-input" accept=".json" style="display:none" />
+          <div id="import-status" style="margin-top:8px;font-size:11px;"></div>
+        </div>
       </div>
 
       <div class="settings-divider"></div>
@@ -555,6 +593,8 @@ const DB = {
   set wishlist(v) { localStorage.setItem('btb_wishlist', JSON.stringify(v)); },
   get rawgKey()   { return localStorage.getItem('btb_rawg_key') || ''; },
   set rawgKey(v)  { localStorage.setItem('btb_rawg_key', v); },
+  get sgdbKey()   { return localStorage.getItem('btb_sgdb_key') || ''; },
+  set sgdbKey(v)  { localStorage.setItem('btb_sgdb_key', v); },
   get imgCache()  { return JSON.parse(localStorage.getItem('btb_img_cache') || '{}'); },
   set imgCache(v) { localStorage.setItem('btb_img_cache', JSON.stringify(v)); },
   get uiState()   { return JSON.parse(localStorage.getItem('btb_ui_state') || '{}'); },
@@ -992,6 +1032,38 @@ async function doSearch(append) {
   }
 }
 
+// =============================================
+// STEAMGRIDDB — portrait box art
+// =============================================
+const sgdbArtCache = new Map(); // session cache: rawgId -> art URL
+
+async function fetchSGDBart(rawgId, title) {
+  if (!DB.sgdbKey) return null;
+  if (sgdbArtCache.has(rawgId)) return sgdbArtCache.get(rawgId);
+  try {
+    // Search by game name
+    const searchRes = await fetch(
+      'https://www.steamgriddb.com/api/v2/search/autocomplete/' + encodeURIComponent(title),
+      { headers: { Authorization: 'Bearer ' + DB.sgdbKey } }
+    );
+    if (!searchRes.ok) return null;
+    const searchData = await searchRes.json();
+    const game = searchData.data && searchData.data[0];
+    if (!game) return null;
+
+    // Fetch portrait grids (600x900 style box art)
+    const gridRes = await fetch(
+      'https://www.steamgriddb.com/api/v2/grids/game/' + game.id + '?dimensions=600x900&limit=1',
+      { headers: { Authorization: 'Bearer ' + DB.sgdbKey } }
+    );
+    if (!gridRes.ok) return null;
+    const gridData = await gridRes.json();
+    const url = gridData.data && gridData.data[0] && gridData.data[0].url;
+    if (url) sgdbArtCache.set(rawgId, url);
+    return url || null;
+  } catch(e) { return null; }
+}
+
 function rawgToGame(r) {
   return {
     id: uid(), rawgId: r.id, title: r.name,
@@ -1022,6 +1094,23 @@ function renderSearchResults(released, upcoming, hasMore) {
   if (!released.length && !filtUp.length) html += '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><p>No games found.</p></div>';
   if (hasMore) html += '<div class="load-more-wrap" id="load-more-wrap"><button class="btn-load-more" onclick="doSearch(true)">Load more results</button></div>';
   resultsEl.innerHTML = html;
+
+  // After render, upgrade art with SGDB portrait images where available
+  if (DB.sgdbKey) {
+    const allGames = [...filtUp, ...released].map(r => rawgToGame(r));
+    // rawgToGame was already called during card build so we re-use those objects
+    // Instead walk the rendered cards and upgrade their images
+    document.querySelectorAll('.sr-card[data-key]').forEach(card => {
+      const key = card.dataset.key;
+      const g = gameStore.get(key);
+      if (!g || !g.rawgId) return;
+      fetchSGDBart(g.rawgId, g.title).then(url => {
+        if (!url) return;
+        const img = card.querySelector('.card-art img');
+        if (img) { img.src = url; g.art = url; }
+      });
+    });
+  }
 }
 
 function buildSearchCard(g, bl, wl, forceUpcoming) {
@@ -1281,20 +1370,101 @@ function initPullToRefresh(panelId, refreshFn) {
 }
 
 // =============================================
-// SETTINGS
+// EXPORT / IMPORT
 // =============================================
+document.getElementById('btn-export').addEventListener('click', () => {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    backlog:  DB.backlog,
+    wishlist: DB.wishlist,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'beat-the-backlog-backup-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✓ Backup exported!');
+});
+
+function triggerImport(mode) {
+  const input = document.getElementById('import-file-input');
+  input.dataset.mode = mode;
+  input.click();
+}
+
+document.getElementById('import-file-input').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  const mode = this.dataset.mode || 'merge';
+  const statusEl = document.getElementById('import-status');
+  statusEl.textContent = 'Reading file...';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.backlog || !data.wishlist) throw new Error('Invalid backup file format');
+
+      if (mode === 'replace') {
+        if (!confirm('This will replace your entire backlog and wishlist with the backup. Are you sure?')) {
+          statusEl.textContent = '';
+          return;
+        }
+        DB.backlog  = data.backlog;
+        DB.wishlist = data.wishlist;
+        statusEl.innerHTML = '<span style="color:var(--green)">✓ Replaced with ' + data.backlog.length + ' backlog + ' + data.wishlist.length + ' wishlist games</span>';
+      } else {
+        // Merge — add games not already present (match by title)
+        const bl = DB.backlog, wl = DB.wishlist;
+        let addedBL = 0, addedWL = 0;
+        data.backlog.forEach(g => {
+          if (!bl.find(x => x.title === g.title)) { bl.push(g); addedBL++; }
+        });
+        data.wishlist.forEach(g => {
+          if (!wl.find(x => x.title === g.title)) { wl.push(g); addedWL++; }
+        });
+        DB.backlog  = bl;
+        DB.wishlist = wl;
+        statusEl.innerHTML = '<span style="color:var(--green)">✓ Merged: +' + addedBL + ' backlog, +' + addedWL + ' wishlist</span>';
+      }
+
+      localStorage.setItem('btb_seeded', '1'); // prevent re-seed after import
+      renderBacklog();
+      renderWishlist();
+      updateStats();
+      showToast('✓ Import complete!');
+    } catch(err) {
+      statusEl.innerHTML = '<span style="color:var(--red)">Error: ' + err.message + '</span>';
+    }
+    this.value = ''; // reset input so same file can be re-selected
+  };
+  reader.readAsText(file);
+});
+
+// =============================================
+// SETTINGS
+// ==============================================
 function renderSettings() {
-  document.getElementById('key-rawg').value = DB.rawgKey ? '\u2022'.repeat(20) : '';
+  document.getElementById('key-rawg').value = DB.rawgKey ? '•'.repeat(20) : '';
+  document.getElementById('key-sgdb').value = DB.sgdbKey ? '•'.repeat(20) : '';
   document.getElementById('rawg-status').innerHTML = DB.rawgKey
     ? '<span class="key-status saved">'+ICONS.check+' Key saved</span>'
     : '<span class="key-status missing">No key set</span>';
+  document.getElementById('sgdb-status').innerHTML = DB.sgdbKey
+    ? '<span class="key-status saved">'+ICONS.check+' Key saved</span>'
+    : '<span class="key-status missing">No key set — box art will use RAWG images</span>';
 }
 
 document.getElementById('btn-save-keys').addEventListener('click', () => {
   const rawg = document.getElementById('key-rawg').value.trim();
-  if (rawg && !rawg.startsWith('\u2022')) DB.rawgKey = rawg;
+  const sgdb = document.getElementById('key-sgdb').value.trim();
+  if (rawg && !rawg.startsWith('•')) DB.rawgKey = rawg;
+  if (sgdb && !sgdb.startsWith('•')) DB.sgdbKey = sgdb;
   renderSettings();
-  showToast('\u2713 Key saved');
+  showToast('✓ Keys saved');
 });
 
 document.getElementById('btn-clear-cache').addEventListener('click', () => {
@@ -1309,12 +1479,16 @@ document.getElementById('btn-clear-all').addEventListener('click', () => {
   renderBacklog(); renderWishlist(); updateStats();
 });
 
-document.getElementById('key-rawg').addEventListener('focus', function() {
-  if (this.value.startsWith('\u2022')) this.value = '';
-  this.type = 'text';
-});
-document.getElementById('key-rawg').addEventListener('blur', function() {
-  this.type = 'password';
+['key-rawg','key-sgdb'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('focus', function() {
+    if (this.value.startsWith('•')) this.value = '';
+    this.type = 'text';
+  });
+  el.addEventListener('blur', function() {
+    this.type = 'password';
+  });
 });
 
 // =============================================

@@ -31,11 +31,11 @@
 
     /* HEADER */
     #header{flex-shrink:0;background:var(--bg-base);padding:12px 16px 0;z-index:10;}
-    .header-top{display:flex;align-items:center;justify-content:space-between;height:40px;}
-    .logo{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:1px;line-height:1;}
+    .header-top{display:flex;flex-direction:column;gap:6px;}
+    .logo{font-family:var(--font-display);font-size:26px;font-weight:700;letter-spacing:1px;line-height:1;}
     .logo .beat{color:#fff;} .logo .the{color:var(--blue);} .logo .back{color:#fff;}
-    .header-stats{display:flex;gap:12px;align-items:center;}
-    .stat-item{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--text-secondary);}
+    .header-stats{display:flex;gap:14px;align-items:center;}
+    .stat-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--text-secondary);}
     .stat-dot{width:7px;height:7px;border-radius:50%;}
     .stat-dot.playing{background:var(--blue);box-shadow:0 0 5px var(--blue);}
     .stat-dot.done{background:var(--green);box-shadow:0 0 5px var(--green);}

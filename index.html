@@ -748,7 +748,7 @@ function buildBacklogCard(g) {
         +'<button class="btn btn-drop'+(g.status==='abandoned'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'abandoned\')">Drop</button>'
         +'<button class="btn btn-remove" onclick="removeFromBacklog(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>'
       +'</div>'
-      +'<button class="btn btn-more" onclick="openSheetFromDB('backlog',''+g.id+'')">' +ICONS.external+' More</button>'
+      +'<button class="btn btn-more" data-src="backlog" data-id="'+g.id+'" onclick="openSheetFromBtn(this)">'+ICONS.external+' More</button>'
       +'</div>'
     +'</div></div>';
 }
@@ -841,7 +841,7 @@ function buildWishlistCard(g) {
         +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'Upcoming')+'</span></div>'
       +'</div>'
       +'<div class="card-actions"><div class="card-actions-left">'+actionBtns+'</div>'
-      +'<button class="btn btn-more" onclick="openSheetFromDB('wishlist',''+g.id+'')">' +ICONS.external+' More</button>'
+      +'<button class="btn btn-more" data-src="wishlist" data-id="'+g.id+'" onclick="openSheetFromBtn(this)">'+ICONS.external+' More</button>'
       +'</div>'
     +'</div></div>';
 }
@@ -1103,10 +1103,12 @@ function clearSearch() {
 // =============================================
 let sheetTouchStartY = 0, sheetDragging = false;
 
-function openSheetFromDB(source, id) {
-  // Always looks up fresh from localStorage - never stale
-  const list = source === 'backlog' ? DB.backlog : DB.wishlist;
-  const g = list.find(x => x.id === id);
+function openSheetFromBtn(btn) {
+  // Reads source+id from data attributes — no quoting issues possible
+  const source = btn.dataset.src;
+  const id     = btn.dataset.id;
+  const list   = source === 'backlog' ? DB.backlog : DB.wishlist;
+  const g      = list.find(x => x.id === id);
   if (!g) { showToast('Could not open details'); return; }
   const key = storeGame(g);
   openSheet(key, g);

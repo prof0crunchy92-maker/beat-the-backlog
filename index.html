@@ -405,17 +405,7 @@
           <div id="rawg-status"></div>
         </div>
 
-        <div class="settings-field">
-          <label class="settings-label">IGDB CLIENT ID</label>
-          <input class="input-key" id="key-igdb-id" type="password" placeholder="Twitch / IGDB Client ID..." autocomplete="off" />
-          <div class="settings-hint">Register at <strong>dev.twitch.tv</strong> to get Client ID + Secret.</div>
-        </div>
 
-        <div class="settings-field">
-          <label class="settings-label">IGDB CLIENT SECRET</label>
-          <input class="input-key" id="key-igdb-secret" type="password" placeholder="Twitch / IGDB Client Secret..." autocomplete="off" />
-          <div id="igdb-status"></div>
-        </div>
 
         <button class="btn-save" id="btn-save-keys">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -483,10 +473,7 @@ const DB = {
   set wishlist(v)       { localStorage.setItem('btb_wishlist', JSON.stringify(v)); },
   get rawgKey()         { return localStorage.getItem('btb_rawg_key') || ''; },
   set rawgKey(v)        { localStorage.setItem('btb_rawg_key', v); },
-  get igdbClientId()    { return localStorage.getItem('btb_igdb_id') || ''; },
-  set igdbClientId(v)   { localStorage.setItem('btb_igdb_id', v); },
-  get igdbSecret()      { return localStorage.getItem('btb_igdb_secret') || ''; },
-  set igdbSecret(v)     { localStorage.setItem('btb_igdb_secret', v); },
+
   get imgCache()        { return JSON.parse(localStorage.getItem('btb_img_cache') || '{}'); },
   set imgCache(v)       { localStorage.setItem('btb_img_cache', JSON.stringify(v)); },
 };
@@ -1034,16 +1021,10 @@ function clearSearch() {
 // SETTINGS
 // =============================================
 function renderSettings() {
-  document.getElementById('key-rawg').value       = DB.rawgKey ? '•'.repeat(20) : '';
-  document.getElementById('key-igdb-id').value    = DB.igdbClientId ? '•'.repeat(20) : '';
-  document.getElementById('key-igdb-secret').value= DB.igdbSecret ? '•'.repeat(20) : '';
-
+  document.getElementById('key-rawg').value = DB.rawgKey ? '•'.repeat(20) : '';
   document.getElementById('rawg-status').innerHTML = DB.rawgKey
     ? '<span class="key-status saved">'+ICONS.check+' Key saved</span>'
     : '<span class="key-status missing">No key set</span>';
-  document.getElementById('igdb-status').innerHTML = DB.igdbClientId && DB.igdbSecret
-    ? '<span class="key-status saved">'+ICONS.check+' Keys saved</span>'
-    : '<span class="key-status missing">No keys set</span>';
 }
 
 document.getElementById('btn-save-keys').addEventListener('click', () => {
@@ -1071,7 +1052,7 @@ document.getElementById('btn-clear-all').addEventListener('click', () => {
 });
 
 // Unmask key inputs on focus
-['key-rawg','key-igdb-id','key-igdb-secret'].forEach(id => {
+['key-rawg'].forEach(id => {
   document.getElementById(id).addEventListener('focus', function() {
     if (this.value.startsWith('\u2022')) this.value = '';
     this.type = 'text';
@@ -1127,3 +1108,9 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+document.getElementById('btn-save-keys').addEventListener('click', () => {
+  const rawg = document.getElementById('key-rawg').value.trim();
+  if (rawg && !rawg.startsWith('•')) DB.rawgKey = rawg;
+  renderSettings();
+  showToast('✓ Key saved');
+});

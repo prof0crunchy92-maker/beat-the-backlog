@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'btb-v12';
+const CACHE_VERSION = 'btb-v13';
 const ASSETS = [
   '/beat-the-backlog/index.html',
   '/beat-the-backlog/manifest.json'

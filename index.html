@@ -562,6 +562,19 @@ const DB = {
 };
 
 // =============================================
+// GAME DATA STORE
+// Avoids passing game objects through HTML attributes entirely,
+// which breaks on apostrophes, quotes and other special characters.
+// =============================================
+const gameStore = new Map();
+let gameStoreId = 0;
+function storeGame(g) {
+  const key = 'gk' + (++gameStoreId);
+  gameStore.set(key, g);
+  return key;
+}
+
+// =============================================
 // SEED DATA
 // =============================================
 function seedData() {
@@ -569,23 +582,23 @@ function seedData() {
   localStorage.setItem('btb_seeded', '1');
   if (DB.backlog.length === 0) {
     DB.backlog = [
-      { id:'s1', title:'Final Fantasy XVI',      platform:'PC, PlayStation 5',                  genre:'Action, RPG',          releaseDate:'2023-06-22', metacritic:88, status:'started',   addedAt:Date.now()-6e6, art:'https://media.rawg.io/media/games/da8/da84e08a5f1c1adccbdebcc8e4e30e63.jpg' },
-      { id:'s2', title:'Ghost of Tsushima',      platform:'PC, PlayStation 5, PlayStation 4',   genre:'Adventure, Action, RPG',releaseDate:'2020-07-17', metacritic:83, status:'started',   addedAt:Date.now()-5e6, art:'https://media.rawg.io/media/games/f55/f558e1c10a26a7a7cca73b4e817cba50.jpg' },
-      { id:'s3', title:'God of War: Ragnar\u00f6k', platform:'PC, PlayStation 5, PlayStation 4',genre:'Action',               releaseDate:'2022-11-09', metacritic:94, status:'started',   addedAt:Date.now()-4e6, art:'https://media.rawg.io/media/games/fc7/fc70b3c82753dcae35e13e18e879e683.jpg' },
-      { id:'s4', title:'Hogwarts Legacy',         platform:'PC, PlayStation 5, Xbox One',        genre:'Action, RPG',          releaseDate:'2023-02-10', metacritic:84, status:'new',       addedAt:Date.now()-3e6, art:'https://media.rawg.io/media/games/f24/f2493a0f4ac9c1f5fc31a05e56a7eb35.jpg' },
-      { id:'s5', title:'Lies of P',               platform:'PC, PlayStation 5, Xbox Series S/X', genre:'Action, RPG',          releaseDate:'2023-09-19', metacritic:80, status:'new',       addedAt:Date.now()-2e6, art:'https://media.rawg.io/media/games/d11/d116f1b08fb60d81dc64af1aa1e7cb5f.jpg' },
-      { id:'s6', title:'Elden Ring',              platform:'PC, PlayStation 5, Xbox Series S/X', genre:'Action, RPG',          releaseDate:'2022-02-25', metacritic:96, status:'completed', addedAt:Date.now()-9e6, art:'https://media.rawg.io/media/games/b29/b294fdd866dcdb643e7bab370a552855.jpg' },
-      { id:'s7', title:'Cyberpunk 2077',          platform:'PC, PlayStation 5, Xbox Series S/X', genre:'Action, RPG',          releaseDate:'2020-12-10', metacritic:86, status:'completed', addedAt:Date.now()-8e6, art:'https://media.rawg.io/media/games/26d/26d4437715bee60138dab4a7c8c59c92.jpg' },
-      { id:'s8', title:'Forspoken',               platform:'PC, PlayStation 5',                  genre:'Action, RPG',          releaseDate:'2023-01-24', metacritic:67, status:'abandoned', addedAt:Date.now()-1e6, art:'https://media.rawg.io/media/games/98a/98a468a3ac9ddb1e7b09f9b6c34f87f8.jpg' },
+      { id:'s1', title:'Final Fantasy XVI',         platform:'PC, PlayStation 5',                  genre:'Action, RPG',           releaseDate:'2023-06-22', metacritic:88, status:'started',   addedAt:Date.now()-6e6, art:'https://media.rawg.io/media/games/da8/da84e08a5f1c1adccbdebcc8e4e30e63.jpg' },
+      { id:'s2', title:'Ghost of Tsushima',         platform:'PC, PlayStation 5, PlayStation 4',   genre:'Adventure, Action, RPG', releaseDate:'2020-07-17', metacritic:83, status:'started',   addedAt:Date.now()-5e6, art:'https://media.rawg.io/media/games/f55/f558e1c10a26a7a7cca73b4e817cba50.jpg' },
+      { id:'s3', title:'God of War: Ragnar\u00f6k', platform:'PC, PlayStation 5, PlayStation 4',   genre:'Action',                releaseDate:'2022-11-09', metacritic:94, status:'started',   addedAt:Date.now()-4e6, art:'https://media.rawg.io/media/games/fc7/fc70b3c82753dcae35e13e18e879e683.jpg' },
+      { id:'s4', title:'Hogwarts Legacy',            platform:'PC, PlayStation 5, Xbox One',        genre:'Action, RPG',           releaseDate:'2023-02-10', metacritic:84, status:'new',       addedAt:Date.now()-3e6, art:'https://media.rawg.io/media/games/f24/f2493a0f4ac9c1f5fc31a05e56a7eb35.jpg' },
+      { id:'s5', title:'Lies of P',                  platform:'PC, PlayStation 5, Xbox Series S/X', genre:'Action, RPG',           releaseDate:'2023-09-19', metacritic:80, status:'new',       addedAt:Date.now()-2e6, art:'https://media.rawg.io/media/games/d11/d116f1b08fb60d81dc64af1aa1e7cb5f.jpg' },
+      { id:'s6', title:'Elden Ring',                 platform:'PC, PlayStation 5, Xbox Series S/X', genre:'Action, RPG',           releaseDate:'2022-02-25', metacritic:96, status:'completed', addedAt:Date.now()-9e6, art:'https://media.rawg.io/media/games/b29/b294fdd866dcdb643e7bab370a552855.jpg' },
+      { id:'s7', title:'Cyberpunk 2077',             platform:'PC, PlayStation 5, Xbox Series S/X', genre:'Action, RPG',           releaseDate:'2020-12-10', metacritic:86, status:'completed', addedAt:Date.now()-8e6, art:'https://media.rawg.io/media/games/26d/26d4437715bee60138dab4a7c8c59c92.jpg' },
+      { id:'s8', title:'Forspoken',                  platform:'PC, PlayStation 5',                  genre:'Action, RPG',           releaseDate:'2023-01-24', metacritic:67, status:'abandoned', addedAt:Date.now()-1e6, art:'https://media.rawg.io/media/games/98a/98a468a3ac9ddb1e7b09f9b6c34f87f8.jpg' },
     ];
   }
   if (DB.wishlist.length === 0) {
     DB.wishlist = [
-      { id:'w1', title:"Marvel's Wolverine",          platform:'PlayStation 5',                         genre:'Action',          releaseDate:'2026-09-15', metacritic:null, upcoming:true,  addedAt:Date.now()-5e5, art:'https://media.rawg.io/media/games/5a4/5a44112251d70a25291cc33757220fce.jpg' },
-      { id:'w2', title:'Control Resonant',            platform:'PC, PlayStation 5, Xbox Series S/X',   genre:'Adventure, Action',releaseDate:'2026-12-31', metacritic:null, upcoming:true,  addedAt:Date.now()-4e5, art:'https://media.rawg.io/media/games/5bb/5bb55ccb8205901b7b4a3913d7f3f824.jpg' },
-      { id:'w3', title:'Resident Evil 9: Requiem',    platform:'PC, PlayStation 5, Xbox Series S/X',   genre:'Action, Horror',  releaseDate:'2026-02-27', metacritic:null, upcoming:false, addedAt:Date.now()-3e5, art:'https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg' },
-      { id:'w4', title:'Clair Obscur: Expedition 33', platform:'PC, PlayStation 5, Xbox Series S/X',   genre:'RPG',             releaseDate:'2025-04-24', metacritic:91,   upcoming:false, addedAt:Date.now()-2e5, art:'https://media.rawg.io/media/games/5eb/5eb49a5e4f4d3a69b37b1b5a6e3a57b3.jpg' },
-      { id:'w5', title:'Alan Wake 2',                 platform:'PC, PlayStation 5, Xbox Series S/X',   genre:'Action, Horror',  releaseDate:'2023-10-27', metacritic:89,   upcoming:false, addedAt:Date.now()-1e5, art:'https://media.rawg.io/media/games/c8a/c8a85a8c6d59d9e0b3a02ef63ce9d9af.jpg' },
+      { id:'w1', title:"Marvel's Wolverine",         platform:'PlayStation 5',                        genre:'Action',           releaseDate:'2026-09-15', metacritic:null, upcoming:true,  addedAt:Date.now()-5e5, art:'https://media.rawg.io/media/games/5a4/5a44112251d70a25291cc33757220fce.jpg' },
+      { id:'w2', title:'Control Resonant',           platform:'PC, PlayStation 5, Xbox Series S/X',  genre:'Adventure, Action', releaseDate:'2026-12-31', metacritic:null, upcoming:true,  addedAt:Date.now()-4e5, art:'https://media.rawg.io/media/games/5bb/5bb55ccb8205901b7b4a3913d7f3f824.jpg' },
+      { id:'w3', title:'Resident Evil 9: Requiem',  platform:'PC, PlayStation 5, Xbox Series S/X',  genre:'Action, Horror',   releaseDate:'2026-02-27', metacritic:null, upcoming:false, addedAt:Date.now()-3e5, art:'https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg' },
+      { id:'w4', title:'Clair Obscur: Expedition 33',platform:'PC, PlayStation 5, Xbox Series S/X', genre:'RPG',              releaseDate:'2025-04-24', metacritic:91,   upcoming:false, addedAt:Date.now()-2e5, art:'https://media.rawg.io/media/games/5eb/5eb49a5e4f4d3a69b37b1b5a6e3a57b3.jpg' },
+      { id:'w5', title:'Alan Wake 2',                platform:'PC, PlayStation 5, Xbox Series S/X',  genre:'Action, Horror',   releaseDate:'2023-10-27', metacritic:89,   upcoming:false, addedAt:Date.now()-1e5, art:'https://media.rawg.io/media/games/c8a/c8a85a8c6d59d9e0b3a02ef63ce9d9af.jpg' },
     ];
   }
 }
@@ -604,10 +617,6 @@ function showToast(msg) {
 function mcClass(score) {
   if (!score) return 'none';
   return score >= 80 ? '' : score >= 60 ? 'mid' : 'low';
-}
-
-function learnMoreURL(title) {
-  return 'https://www.google.com/search?q=' + encodeURIComponent(title + ' game');
 }
 
 function isUpcoming(game) {
@@ -632,7 +641,7 @@ const ICONS = {
 
 function artImg(url, title) {
   if (!url) return '<div class="art-placeholder"></div>';
-  return '<img src="' + url + '" alt="' + (title||'').replace(/"/g,'') + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=art-placeholder></div>\'" />';
+  return '<img src="' + url + '" alt="' + (title||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;') + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=art-placeholder></div>\'" />';
 }
 
 function platShort(p) {
@@ -682,7 +691,7 @@ function renderBacklog() {
   const sortBy     = document.getElementById('backlog-sort').value;
 
   let games = DB.backlog;
-  if (searchVal)        games = games.filter(g => g.title.toLowerCase().includes(searchVal));
+  if (searchVal)            games = games.filter(g => g.title.toLowerCase().includes(searchVal));
   if (statusFilt !== 'all') games = games.filter(g => g.status === statusFilt);
   games = [...games].sort((a,b) => {
     if (sortBy==='title')      return a.title.localeCompare(b.title);
@@ -695,20 +704,20 @@ function renderBacklog() {
   const abandoned = games.filter(g => g.status==='abandoned');
 
   let html = '';
-  if (!statusFilt || statusFilt==='all' || statusFilt==='new' || statusFilt==='started') {
+  if (statusFilt==='all'||statusFilt==='new'||statusFilt==='started') {
     if (active.length) {
       html += '<div class="section-header blue">'+ICONS.grid+' Active ('+active.length+')</div>';
       active.forEach(g => { html += buildBacklogCard(g); });
     }
   }
-  if (!statusFilt || statusFilt==='all' || statusFilt==='completed') {
+  if (statusFilt==='all'||statusFilt==='completed') {
     if (completed.length) {
       if (html) html += '<div class="section-divider"></div>';
       html += '<div class="section-header green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Completed ('+completed.length+')</div>';
       completed.forEach(g => { html += buildBacklogCard(g); });
     }
   }
-  if (!statusFilt || statusFilt==='all' || statusFilt==='abandoned') {
+  if (statusFilt==='all'||statusFilt==='abandoned') {
     if (abandoned.length) {
       if (html) html += '<div class="section-divider"></div>';
       html += '<div class="section-header red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Abandoned ('+abandoned.length+')</div>';
@@ -721,10 +730,10 @@ function renderBacklog() {
 }
 
 function buildBacklogCard(g) {
+  const key = storeGame(g);
   const mc  = g.metacritic;
   const mcH = mc ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>' : '<span class="metacritic-badge none">-</span>';
   const sl  = {new:'Not Started',started:'Playing',completed:'Completed',abandoned:'Abandoned'};
-  const enc = encodeURIComponent(JSON.stringify(g));
   return '<div class="game-card status-'+g.status+'" data-id="'+g.id+'">'
     +'<div class="card-art">'+artImg(g.art,g.title)+'</div>'
     +'<div class="card-body">'
@@ -740,7 +749,7 @@ function buildBacklogCard(g) {
         +'<button class="btn btn-drop'+(g.status==='abandoned'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'abandoned\')">Drop</button>'
         +'<button class="btn btn-remove" onclick="removeFromBacklog(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>'
       +'</div>'
-      +'<button class="btn btn-more" data-enc=\"\'+enc+\'\",onclick=\"openSheetFromBtn(this)\">'+ICONS.external+' More</button>'
+      +'<button class="btn btn-more" onclick="openSheetByKey(\''+key+'\')">'+ICONS.external+' More</button>'
       +'</div>'
     +'</div></div>';
 }
@@ -815,12 +824,12 @@ function renderWishlist() {
 }
 
 function buildWishlistCard(g) {
+  const key = storeGame(g);
   const up  = isUpcoming(g);
   const mc  = g.metacritic;
   const mcH = mc
     ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>'
     : (up ? '<span class="upcoming-badge">'+ICONS.clock+'Upcoming</span>' : '<span class="metacritic-badge none">-</span>');
-  const enc = encodeURIComponent(JSON.stringify(g));
   const actionBtns = up
     ? '<button class="btn btn-remove" onclick="removeFromWishlist(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>'
     : '<button class="btn btn-to-backlog" onclick="moveWishlistToBacklog(\''+g.id+'\')">'+ICONS.grid+' +&nbsp;Backlog</button>'
@@ -834,7 +843,7 @@ function buildWishlistCard(g) {
         +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'Upcoming')+'</span></div>'
       +'</div>'
       +'<div class="card-actions"><div class="card-actions-left">'+actionBtns+'</div>'
-      +'<button class="btn btn-more" data-enc=\"\'+enc+\'\",onclick=\"openSheetFromBtn(this)\">'+ICONS.external+' More</button>'
+      +'<button class="btn btn-more" onclick="openSheetByKey(\''+key+'\')">'+ICONS.external+' More</button>'
       +'</div>'
     +'</div></div>';
 }
@@ -1018,6 +1027,7 @@ function renderSearchResults(released, upcoming, hasMore) {
 }
 
 function buildSearchCard(g, bl, wl, forceUpcoming) {
+  const key  = storeGame(g);
   const up   = forceUpcoming || isUpcoming(g);
   const inBL = bl.some(x=>x.title===g.title||x.rawgId===g.rawgId);
   const inWL = wl.some(x=>x.title===g.title||x.rawgId===g.rawgId);
@@ -1025,14 +1035,13 @@ function buildSearchCard(g, bl, wl, forceUpcoming) {
   const mcH  = mc ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>'
                   : (up ? '<span class="upcoming-badge">'+ICONS.clock+'Upcoming</span>' : '<span class="metacritic-badge none">-</span>');
   const extra = up ? '' : (inBL ? 'in-backlog' : inWL ? 'in-wishlist' : '');
-  const enc   = encodeURIComponent(JSON.stringify(g));
   const blBtn = up ? '' : (inBL
     ? '<button class="btn btn-added" disabled>'+ICONS.check+' In Backlog</button>'
-    : '<button class="btn btn-add-backlog" onclick="addSearchToBacklog(\''+g.rawgId+'\',\''+enc+'\')">'+ICONS.grid+' +&nbsp;Backlog</button>');
+    : '<button class="btn btn-add-backlog" onclick="addToBacklogByKey(\''+key+'\')">'+ICONS.grid+' +&nbsp;Backlog</button>');
   const wlBtn = inWL
     ? '<button class="btn btn-added" disabled>'+ICONS.check+' In Wishlist</button>'
-    : '<button class="btn btn-add-wishlist" onclick="addSearchToWishlist(\''+g.rawgId+'\',\''+enc+'\')">'+ICONS.bookmark+' +&nbsp;Wishlist</button>';
-  return '<div class="sr-card '+extra+'" data-rawg="'+(g.rawgId||'')+'">'
+    : '<button class="btn btn-add-wishlist" onclick="addToWishlistByKey(\''+key+'\')">'+ICONS.bookmark+' +&nbsp;Wishlist</button>';
+  return '<div class="sr-card '+extra+'" data-key="'+key+'">'
     +'<div class="card-art">'+artImg(g.art,g.title)+'</div>'
     +'<div class="card-body">'
       +'<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>'
@@ -1041,38 +1050,42 @@ function buildSearchCard(g, bl, wl, forceUpcoming) {
         +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'TBA')+'</span></div>'
       +'</div>'
       +'<div class="card-actions"><div class="card-actions-left">'+blBtn+wlBtn+'</div>'
-      +'<button class="btn btn-more" data-enc=\"\'+enc+\'\",onclick=\"openSheetFromBtn(this)\">'+ICONS.external+' More</button>'
+      +'<button class="btn btn-more" onclick="openSheetByKey(\''+key+'\')">'+ICONS.external+' More</button>'
       +'</div>'
     +'</div></div>';
 }
 
-function addSearchToBacklog(rawgId, encoded) {
-  const g = JSON.parse(decodeURIComponent(encoded));
+function addToBacklogByKey(key) {
+  const g = gameStore.get(key);
+  if (!g) return;
   const bl = DB.backlog;
   if (bl.some(x=>x.title===g.title||x.rawgId===g.rawgId)) { showToast('Already in backlog'); return; }
   bl.push({...g, status:'new', addedAt:Date.now()});
   DB.backlog = bl;
   showToast('\u2713 Added to backlog!');
-  document.querySelectorAll('.sr-card[data-rawg="'+rawgId+'"]').forEach(el => {
-    el.classList.add('in-backlog');
-    const btn = el.querySelector('.btn-add-backlog');
+  const card = document.querySelector('.sr-card[data-key="'+key+'"]');
+  if (card) {
+    card.classList.add('in-backlog');
+    const btn = card.querySelector('.btn-add-backlog');
     if (btn) btn.outerHTML = '<button class="btn btn-added" disabled>'+ICONS.check+' In Backlog</button>';
-  });
+  }
   updateStats();
 }
 
-function addSearchToWishlist(rawgId, encoded) {
-  const g = JSON.parse(decodeURIComponent(encoded));
+function addToWishlistByKey(key) {
+  const g = gameStore.get(key);
+  if (!g) return;
   const wl = DB.wishlist;
   if (wl.some(x=>x.title===g.title||x.rawgId===g.rawgId)) { showToast('Already in wishlist'); return; }
   wl.push({...g, addedAt:Date.now()});
   DB.wishlist = wl;
   showToast('\u2713 Added to wishlist!');
-  document.querySelectorAll('.sr-card[data-rawg="'+rawgId+'"]').forEach(el => {
-    if (!el.classList.contains('in-backlog')) el.classList.add('in-wishlist');
-    const btn = el.querySelector('.btn-add-wishlist');
+  const card = document.querySelector('.sr-card[data-key="'+key+'"]');
+  if (card) {
+    if (!card.classList.contains('in-backlog')) card.classList.add('in-wishlist');
+    const btn = card.querySelector('.btn-add-wishlist');
     if (btn) btn.outerHTML = '<button class="btn btn-added" disabled>'+ICONS.check+' In Wishlist</button>';
-  });
+  }
   updateStats();
 }
 
@@ -1090,17 +1103,15 @@ function clearSearch() {
 // =============================================
 // GAME DETAIL SHEET
 // =============================================
-let sheetTouchStartY = 0;
-let sheetDragging = false;
+let sheetTouchStartY = 0, sheetDragging = false;
 
-function openSheetFromBtn(btn) {
-  const enc = btn.dataset.enc;
-  const g   = JSON.parse(decodeURIComponent(enc));
-  openSheet(g.rawgId || g.id, enc);
+function openSheetByKey(key) {
+  const g = gameStore.get(key);
+  if (!g) { showToast('Could not open details'); return; }
+  openSheet(key, g);
 }
 
-function openSheet(rawgId, encoded) {
-  const g = JSON.parse(decodeURIComponent(encoded));
+function openSheet(key, g) {
   document.getElementById('sheet-title').textContent = g.title;
   const artEl = document.getElementById('sheet-art-img');
   artEl.src = g.art||''; artEl.alt = g.title;
@@ -1111,18 +1122,18 @@ function openSheet(rawgId, encoded) {
   if (g.genre) g.genre.split(',').slice(0,2).forEach(gen=>{ badges+='<span class="sheet-badge info">'+gen.trim()+'</span>'; });
   document.getElementById('sheet-badges').innerHTML = badges;
   document.getElementById('sheet-body').innerHTML = '<div class="sheet-loading"><div class="spinner"></div> Loading\u2026</div>';
-  renderSheetActions(rawgId, encoded);
+  renderSheetActions(key, g);
   document.getElementById('game-sheet').classList.add('open');
   document.getElementById('sheet-backdrop').classList.add('open');
   document.body.style.overflow = 'hidden';
-  document.getElementById('game-sheet').addEventListener('touchstart', sheetTouchStart, {passive:true});
-  document.getElementById('game-sheet').addEventListener('touchmove',  sheetTouchMove,  {passive:true});
-  document.getElementById('game-sheet').addEventListener('touchend',   sheetTouchEnd,   {passive:true});
+  const sh = document.getElementById('game-sheet');
+  sh.addEventListener('touchstart', sheetTouchStart, {passive:true});
+  sh.addEventListener('touchmove',  sheetTouchMove,  {passive:true});
+  sh.addEventListener('touchend',   sheetTouchEnd,   {passive:true});
   fetchSheetDetails(g);
 }
 
-function renderSheetActions(rawgId, enc) {
-  const g    = JSON.parse(decodeURIComponent(enc));
+function renderSheetActions(key, g) {
   const bl   = DB.backlog, wl = DB.wishlist;
   const inBL = bl.some(x=>x.title===g.title||x.rawgId===g.rawgId);
   const inWL = wl.some(x=>x.title===g.title||x.rawgId===g.rawgId);
@@ -1131,11 +1142,11 @@ function renderSheetActions(rawgId, enc) {
   if (!up) {
     a += inBL
       ? '<button class="btn btn-added" disabled style="flex:1;justify-content:center">'+ICONS.check+' In Backlog</button>'
-      : '<button class="btn btn-add-backlog" style="flex:1;justify-content:center" onclick="addSearchToBacklog(\''+rawgId+'\',\''+enc+'\');renderSheetActions(\''+rawgId+'\',\''+enc+'\')">'+ICONS.grid+' + Backlog</button>';
+      : '<button class="btn btn-add-backlog" style="flex:1;justify-content:center" onclick="addToBacklogByKey(\''+key+'\');renderSheetActions(\''+key+'\',gameStore.get(\''+key+'\'))">'+ICONS.grid+' + Backlog</button>';
   }
   a += inWL
     ? '<button class="btn btn-added" disabled style="flex:1;justify-content:center">'+ICONS.check+' In Wishlist</button>'
-    : '<button class="btn btn-add-wishlist" style="flex:1;justify-content:center" onclick="addSearchToWishlist(\''+rawgId+'\',\''+enc+'\');renderSheetActions(\''+rawgId+'\',\''+enc+'\')">'+ICONS.bookmark+' + Wishlist</button>';
+    : '<button class="btn btn-add-wishlist" style="flex:1;justify-content:center" onclick="addToWishlistByKey(\''+key+'\');renderSheetActions(\''+key+'\',gameStore.get(\''+key+'\'))">'+ICONS.bookmark+' + Wishlist</button>';
   document.getElementById('sheet-actions').innerHTML = a;
 }
 
@@ -1163,7 +1174,10 @@ function buildSheetBody(g, detail, screenshots) {
   }
   if (screenshots.length) {
     html += '<div class="sheet-section"><div class="sheet-section-title">Screenshots</div><div class="sheet-screenshots">';
-    screenshots.forEach((s,i)=>{ html+='<div class="sheet-screenshot" data-src="'+encodeURIComponent(s.image)+'" onclick="openLightbox(decodeURIComponent(this.dataset.src))"><img src="'+s.image+'" loading="lazy"/></div>'; });
+    screenshots.forEach(s => {
+      const safeUrl = encodeURIComponent(s.image);
+      html += '<div class="sheet-screenshot" onclick="openLightbox(decodeURIComponent(\''+safeUrl+'\'))"><img src="'+s.image+'" loading="lazy"/></div>';
+    });
     html += '</div></div>';
   }
   const items = [];
@@ -1193,11 +1207,12 @@ function buildSheetBody(g, detail, screenshots) {
 }
 
 function closeSheet() {
-  document.getElementById('game-sheet').classList.remove('open');
-  document.getElementById('sheet-backdrop').classList.remove('open');
-  document.body.style.overflow = '';
   const sh = document.getElementById('game-sheet');
   sh.style.transform = '';
+  sh.style.transition = '';
+  sh.classList.remove('open');
+  document.getElementById('sheet-backdrop').classList.remove('open');
+  document.body.style.overflow = '';
   sh.removeEventListener('touchstart', sheetTouchStart);
   sh.removeEventListener('touchmove',  sheetTouchMove);
   sh.removeEventListener('touchend',   sheetTouchEnd);
@@ -1211,19 +1226,29 @@ function sheetTouchStart(e) {
 function sheetTouchMove(e) {
   if (!sheetDragging) return;
   const dy = Math.max(0, e.touches[0].clientY - sheetTouchStartY);
-  document.getElementById('game-sheet').style.transform = 'translateY(' + dy + 'px)';
+  document.getElementById('game-sheet').style.transform = 'translateY('+dy+'px)';
 }
 function sheetTouchEnd(e) {
   if (!sheetDragging) return;
   sheetDragging = false;
   const dy = e.changedTouches[0].clientY - sheetTouchStartY;
-  const sheet = document.getElementById('game-sheet');
-  sheet.style.transition = '';
-  if (dy > 260) {
-    closeSheet();
-  } else {
-    sheet.style.transform = '';
-  }
+  const sh = document.getElementById('game-sheet');
+  sh.style.transition = '';
+  if (dy > 260) { closeSheet(); } else { sh.style.transform = ''; }
+}
+
+// =============================================
+// LIGHTBOX
+// =============================================
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+  document.body.style.overflow = '';
 }
 
 // =============================================
@@ -1247,23 +1272,8 @@ function initPullToRefresh(panelId, refreshFn) {
 }
 
 // =============================================
-// LIGHTBOX
-// =============================================
-function openLightbox(src) {
-  const lb = document.getElementById('lightbox');
-  document.getElementById('lightbox-img').src = src;
-  lb.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.getElementById('lightbox-img').src = '';
-  document.body.style.overflow = '';
-}
-
-// =============================================
 // SETTINGS
-// ==============================================
+// =============================================
 function renderSettings() {
   document.getElementById('key-rawg').value = DB.rawgKey ? '\u2022'.repeat(20) : '';
   document.getElementById('rawg-status').innerHTML = DB.rawgKey
@@ -1315,7 +1325,6 @@ document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => switchTab(btn.dataset.tab));
 });
 
-// Filter listeners
 document.getElementById('backlog-search').addEventListener('input', renderBacklog);
 document.getElementById('backlog-status-filter').addEventListener('change', renderBacklog);
 document.getElementById('backlog-sort').addEventListener('change', renderBacklog);

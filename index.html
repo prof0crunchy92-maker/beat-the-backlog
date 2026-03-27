@@ -740,7 +740,7 @@ function buildBacklogCard(g) {
         +'<button class="btn btn-drop'+(g.status==='abandoned'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'abandoned\')">Drop</button>'
         +'<button class="btn btn-remove" onclick="removeFromBacklog(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>'
       +'</div>'
-      +'<button class="btn btn-more" onclick="openSheet(\''+g.id+'\',\''+enc+'\')">'+ICONS.external+' More</button>'
+      +'<button class="btn btn-more" data-enc=\"\'+enc+\'\",onclick=\"openSheetFromBtn(this)\">'+ICONS.external+' More</button>'
       +'</div>'
     +'</div></div>';
 }
@@ -834,7 +834,7 @@ function buildWishlistCard(g) {
         +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'Upcoming')+'</span></div>'
       +'</div>'
       +'<div class="card-actions"><div class="card-actions-left">'+actionBtns+'</div>'
-      +'<button class="btn btn-more" onclick="openSheet(\''+g.id+'\',\''+enc+'\')">'+ICONS.external+' More</button>'
+      +'<button class="btn btn-more" data-enc=\"\'+enc+\'\",onclick=\"openSheetFromBtn(this)\">'+ICONS.external+' More</button>'
       +'</div>'
     +'</div></div>';
 }
@@ -1041,7 +1041,7 @@ function buildSearchCard(g, bl, wl, forceUpcoming) {
         +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'TBA')+'</span></div>'
       +'</div>'
       +'<div class="card-actions"><div class="card-actions-left">'+blBtn+wlBtn+'</div>'
-      +'<button class="btn btn-more" onclick="openSheet(\''+(g.rawgId||g.id)+'\',\''+enc+'\')">'+ICONS.external+' More</button>'
+      +'<button class="btn btn-more" data-enc=\"\'+enc+\'\",onclick=\"openSheetFromBtn(this)\">'+ICONS.external+' More</button>'
       +'</div>'
     +'</div></div>';
 }
@@ -1092,6 +1092,12 @@ function clearSearch() {
 // =============================================
 let sheetTouchStartY = 0;
 let sheetDragging = false;
+
+function openSheetFromBtn(btn) {
+  const enc = btn.dataset.enc;
+  const g   = JSON.parse(decodeURIComponent(enc));
+  openSheet(g.rawgId || g.id, enc);
+}
 
 function openSheet(rawgId, encoded) {
   const g = JSON.parse(decodeURIComponent(encoded));

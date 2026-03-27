@@ -214,6 +214,56 @@
     #toast{position:fixed;bottom:calc(var(--nav-height) + 12px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg-surface);border:1px solid var(--border-bright);color:var(--text-primary);padding:9px 18px;border-radius:20px;font-size:12px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:200;white-space:nowrap;}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+    /* PULL TO REFRESH */
+    .ptr-indicator{display:flex;align-items:center;justify-content:center;gap:8px;height:0;overflow:hidden;transition:height .2s;font-size:12px;color:var(--text-muted);}
+    .ptr-indicator.visible{height:40px;}
+    .ptr-spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;}
+
+    /* LOAD MORE */
+    .load-more-wrap{display:flex;justify-content:center;padding:12px 0 4px;}
+    .btn-load-more{background:var(--bg-surface);color:var(--text-secondary);border:1px solid var(--border-bright);padding:9px 24px;border-radius:20px;font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+    .btn-load-more:active{background:rgba(255,255,255,.1);}
+
+    /* BOTTOM SHEET */
+    .sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .sheet-backdrop.open{opacity:1;pointer-events:all;}
+    .sheet{position:fixed;bottom:0;left:0;right:0;background:#18181c;border-radius:20px 20px 0 0;z-index:301;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);max-height:92dvh;display:flex;flex-direction:column;}
+    .sheet.open{transform:translateY(0);}
+    .sheet-handle{width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:10px auto 0;}
+    .sheet-header{display:flex;align-items:flex-start;gap:12px;padding:14px 16px 10px;}
+    .sheet-art{width:72px;height:96px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#0a0a0c;}
+    .sheet-art img{width:100%;height:100%;object-fit:cover;}
+    .sheet-title-block{flex:1;min-width:0;}
+    .sheet-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--text-primary);line-height:1.2;margin-bottom:4px;}
+    .sheet-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+    .sheet-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;border:1px solid;}
+    .sheet-badge.mc-good{background:rgba(46,158,91,.15);color:#3ab872;border-color:rgba(46,158,91,.3);}
+    .sheet-badge.mc-mid{background:rgba(192,160,48,.15);color:#c8a030;border-color:rgba(192,160,48,.3);}
+    .sheet-badge.mc-low{background:rgba(224,68,68,.15);color:#d06060;border-color:rgba(224,68,68,.3);}
+    .sheet-badge.info{background:rgba(255,255,255,.06);color:var(--text-secondary);border-color:rgba(255,255,255,.1);}
+    .sheet-close{background:rgba(255,255,255,.08);border:none;color:var(--text-muted);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+    .sheet-close svg{width:14px;height:14px;}
+    .sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;padding:0 16px 32px;}
+    .sheet-body::-webkit-scrollbar{width:3px;}
+    .sheet-body::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:2px;}
+    .sheet-section{margin-bottom:18px;}
+    .sheet-section-title{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;}
+    .sheet-desc{font-size:13px;color:var(--text-secondary);line-height:1.6;}
+    .sheet-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .sheet-meta-item{background:var(--bg-input);border-radius:var(--radius-md);padding:10px 12px;}
+    .sheet-meta-label{font-size:10px;color:var(--text-muted);font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-bottom:3px;}
+    .sheet-meta-value{font-size:13px;color:var(--text-primary);font-weight:500;}
+    .sheet-screenshots{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .sheet-screenshots::-webkit-scrollbar{display:none;}
+    .sheet-screenshot{flex-shrink:0;width:200px;height:112px;border-radius:8px;overflow:hidden;background:#0a0a0c;}
+    .sheet-screenshot img{width:100%;height:100%;object-fit:cover;}
+    .sheet-stores{display:flex;flex-wrap:wrap;gap:6px;}
+    .sheet-store-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--text-secondary);padding:6px 12px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;}
+    .sheet-store-btn svg{width:11px;height:11px;}
+    .sheet-loading{display:flex;align-items:center;justify-content:center;padding:40px;gap:12px;color:var(--text-muted);font-size:13px;}
+    .sheet-actions{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);flex-shrink:0;}
+    .sheet-actions .btn{flex:1;justify-content:center;padding:10px;}
+
     .hidden{display:none!important;}
   </style>
 </head>
@@ -240,7 +290,7 @@
         <input class="input-search" id="backlog-search" type="search" placeholder="Filter by title..." />
         <div class="filter-row">
           <select class="select-styled" id="backlog-status-filter">
-            <option value="all">All Active</option>
+            <option value="all">All</option>
             <option value="new">Not Started</option>
             <option value="started">Started</option>
             <option value="completed">Completed</option>
@@ -440,6 +490,26 @@
 
   </div><!-- /tab-content -->
 
+  <!-- BOTTOM SHEET -->
+  <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeSheet()"></div>
+  <div class="sheet" id="game-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-art"><img id="sheet-art-img" src="" alt="" /></div>
+      <div class="sheet-title-block">
+        <div class="sheet-title" id="sheet-title"></div>
+        <div class="sheet-badges" id="sheet-badges"></div>
+      </div>
+      <button class="sheet-close" onclick="closeSheet()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body" id="sheet-body">
+      <div class="sheet-loading"><div class="spinner"></div> Loading details...</div>
+    </div>
+    <div class="sheet-actions" id="sheet-actions"></div>
+  </div>
+
   <nav id="bottom-nav">
     <button class="nav-item active" data-tab="backlog">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -475,6 +545,8 @@ const DB = {
   set rawgKey(v)        { localStorage.setItem('btb_rawg_key', v); },
 
   get imgCache()        { return JSON.parse(localStorage.getItem('btb_img_cache') || '{}'); },
+  get uiState()         { return JSON.parse(localStorage.getItem('btb_ui_state') || '{}'); },
+  set uiState(v)        { localStorage.setItem('btb_ui_state', JSON.stringify(v)); },
   set imgCache(v)       { localStorage.setItem('btb_img_cache', JSON.stringify(v)); },
 };
 
@@ -572,11 +644,33 @@ function updateStats() {
 // =============================================
 // BACKLOG
 // =============================================
+function saveUIState() {
+  DB.uiState = {
+    blSearch: document.getElementById('backlog-search').value,
+    blStatus: document.getElementById('backlog-status-filter').value,
+    blSort:   document.getElementById('backlog-sort').value,
+    wlSearch: document.getElementById('wl-search').value,
+    wlGenre:  document.getElementById('wl-genre-filter').value,
+    wlPlat:   document.getElementById('wl-platform-filter').value,
+    wlSort:   document.getElementById('wl-sort').value,
+  };
+}
+
+function restoreUIState() {
+  const s = DB.uiState;
+  if (!s) return;
+  if (s.blSearch !== undefined) document.getElementById('backlog-search').value = s.blSearch;
+  if (s.blStatus !== undefined) document.getElementById('backlog-status-filter').value = s.blStatus;
+  if (s.blSort   !== undefined) document.getElementById('backlog-sort').value = s.blSort;
+  if (s.wlSort   !== undefined) document.getElementById('wl-sort').value = s.wlSort;
+}
+
 function renderBacklog() {
   const container  = document.getElementById('backlog-list');
   const searchVal  = document.getElementById('backlog-search').value.toLowerCase().trim();
   const statusFilt = document.getElementById('backlog-status-filter').value;
   const sortBy     = document.getElementById('backlog-sort').value;
+  saveUIState();
 
   let games = DB.backlog;
   if (searchVal) games = games.filter(g => g.title.toLowerCase().includes(searchVal));
@@ -632,7 +726,7 @@ function buildBacklogCard(g) {
         '<button class="btn btn-done'+(g.status==='completed'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'completed\')">Done</button>' +
         '<button class="btn btn-drop'+(g.status==='abandoned'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'abandoned\')">Drop</button>' +
         '<button class="btn btn-remove" onclick="removeFromBacklog(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>' +
-      '</div><a class="btn btn-more" href="'+learnMoreURL(g.title)+'" target="_blank" rel="noopener">'+ICONS.external+' More</a></div>' +
+      '</div><button class="btn btn-more" onclick="openSheetFromGame(g)">'+ICONS.external+' More</button></div>' +
     '</div></div>';
 }
 
@@ -669,6 +763,7 @@ function renderWishlist() {
   const platFilt  = document.getElementById('wl-platform-filter').value;
   const sortBy    = document.getElementById('wl-sort').value;
 
+  saveUIState();
   let games = DB.wishlist;
   if (searchVal)         games = games.filter(g=>g.title.toLowerCase().includes(searchVal));
   if (genreFilt!=='all') games = games.filter(g=>(g.genre||'').includes(genreFilt));
@@ -714,7 +809,7 @@ function buildWishlistCard(g) {
         '<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>' +
         '<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'Upcoming')+'</span></div>' +
       '</div>' +
-      '<div class="card-actions"><div class="card-actions-left">'+actions+'</div><a class="btn btn-more" href="'+learnMoreURL(g.title)+'" target="_blank" rel="noopener">'+ICONS.external+' More</a></div>' +
+      '<div class="card-actions"><div class="card-actions-left">'+actions+'</div><button class="btn btn-more" onclick="openSheetFromGame(g)">'+ICONS.external+' More</button></div>' +
     '</div></div>';
 }
 
@@ -776,43 +871,8 @@ function toggleTagsPanel() {
   chevron.classList.toggle('open');
 }
 
-// =============================================
-// SEARCH — RAWG API
-// =============================================
+
 const RAWG_BASE = 'https://api.rawg.io/api';
-
-function buildRAWGParams() {
-  const key      = DB.rawgKey;
-  const keyword  = document.getElementById('sr-keyword').value.trim();
-  const platform = document.getElementById('sr-platform').value;
-  const genre    = document.getElementById('sr-genre').value;
-  const mcMin    = document.getElementById('sr-mc-min').value;
-  const mcMax    = document.getElementById('sr-mc-max').value;
-  const yearFrom = document.getElementById('sr-year-from').value;
-  const yearTo   = document.getElementById('sr-year-to').value;
-
-  const params = new URLSearchParams();
-  params.set('key', key);
-  params.set('page_size', '20');
-  params.set('ordering', keyword ? '-relevance' : '-metacritic');
-
-  if (keyword)  params.set('search', keyword);
-  if (platform) params.set('platforms', rawgPlatformId(platform));
-  if (genre)    params.set('genres', genre);
-  if (mcMin)    params.set('metacritic', mcMin + ',' + (mcMax || '100'));
-  else if (mcMax) params.set('metacritic', '0,' + mcMax);
-  if (yearFrom || yearTo) {
-    const from = yearFrom ? yearFrom + '-01-01' : '1970-01-01';
-    const to   = yearTo   ? yearTo   + '-12-31' : '2030-12-31';
-    params.set('dates', from + ',' + to);
-  }
-  if (activeTags.length) params.set('tags', activeTags.map(t=>t.toLowerCase().replace(/ /g,'-')).join(','));
-
-  // Include upcoming
-  params.set('upcoming', 'true');
-
-  return params.toString();
-}
 
 // Map slug to RAWG platform IDs
 function rawgPlatformId(slug) {
@@ -834,12 +894,20 @@ function rawgPlatformId(slug) {
   return map[slug] || slug;
 }
 
-async function doSearch() {
+// =============================================
+// SEARCH — PAGINATION STATE
+// =============================================
+let srPage = 1;
+let srHasMore = false;
+let srLastReleased = [];
+let srLastUpcoming = [];
+
+async function doSearch(append=false) {
   const key = DB.rawgKey;
   const resultsEl = document.getElementById('search-results');
 
   if (!key) {
-    resultsEl.innerHTML = '<div class="error-state">No RAWG API key found. Please add your key in <strong>Settings</strong> first.<br><br>Get a free key at rawg.io/apidocs</div>';
+    resultsEl.innerHTML = '<div class="error-state">No RAWG API key found. Please add your key in <strong>Settings</strong> first.</div>';
     return;
   }
 
@@ -853,82 +921,108 @@ async function doSearch() {
     return;
   }
 
-  resultsEl.innerHTML = '<div class="search-loading"><div class="spinner"></div><div class="loading-text">Searching games\u2026</div></div>';
+  if (!append) {
+    srPage = 1;
+    srLastReleased = [];
+    srLastUpcoming = [];
+    resultsEl.innerHTML = '<div class="search-loading"><div class="spinner"></div><div class="loading-text">Searching games…</div></div>';
+  } else {
+    srPage++;
+    const loadBtn = document.getElementById('btn-load-more-wrap');
+    if (loadBtn) loadBtn.innerHTML = '<div class="search-loading" style="padding:16px"><div class="spinner"></div></div>';
+  }
 
   try {
-    const url = RAWG_BASE + '/games?' + buildRAWGParams();
+    const params = buildRAWGParams(srPage);
+    const url = RAWG_BASE + '/games?' + params;
     const res = await fetch(url);
     if (!res.ok) throw new Error('RAWG returned ' + res.status);
     const data = await res.json();
 
-    // Also fetch upcoming separately if no date filter
-    let upcomingResults = [];
-    const yearFrom = document.getElementById('sr-year-from').value;
-    const yearTo   = document.getElementById('sr-year-to').value;
-    if (!yearFrom && !yearTo) {
+    srHasMore = !!data.next;
+    const newReleased = (data.results || []).filter(r => !r.released || new Date(r.released) <= new Date());
+
+    // Upcoming fetch (first page only)
+    let newUpcoming = [];
+    if (!append) {
       try {
         const today = new Date().toISOString().split('T')[0];
-        const future = '2030-12-31';
         const upParams = new URLSearchParams();
         upParams.set('key', key);
         upParams.set('page_size', '5');
-        upParams.set('dates', today + ',' + future);
+        upParams.set('dates', today + ',2030-12-31');
         upParams.set('ordering', '-added');
-        if (document.getElementById('sr-keyword').value.trim()) upParams.set('search', document.getElementById('sr-keyword').value.trim());
+        if (keyword) upParams.set('search', keyword);
         if (document.getElementById('sr-platform').value) upParams.set('platforms', rawgPlatformId(document.getElementById('sr-platform').value));
         if (document.getElementById('sr-genre').value)    upParams.set('genres', document.getElementById('sr-genre').value);
-        const upRes  = await fetch(RAWG_BASE + '/games?' + upParams.toString());
-        if (upRes.ok) { const upData = await upRes.json(); upcomingResults = (upData.results || []).filter(g=>new Date(g.released)>new Date()); }
-      } catch(e) { /* silently skip upcoming fetch */ }
+        const upRes = await fetch(RAWG_BASE + '/games?' + upParams.toString());
+        if (upRes.ok) { const upData = await upRes.json(); newUpcoming = (upData.results || []).filter(g => new Date(g.released) > new Date()); }
+      } catch(e) {}
     }
 
-    renderSearchResults(data.results || [], upcomingResults, data.count || 0);
+    if (append) {
+      srLastReleased = [...srLastReleased, ...newReleased];
+    } else {
+      srLastReleased = newReleased;
+      srLastUpcoming = newUpcoming;
+    }
+
+    renderSearchResults(srLastReleased, srLastUpcoming, data.count || 0, srHasMore);
   } catch(err) {
-    resultsEl.innerHTML = '<div class="error-state">Search failed: ' + err.message + '<br><br>Check your API key in Settings, and make sure you have an internet connection.</div>';
+    if (!append) resultsEl.innerHTML = '<div class="error-state">Search failed: ' + err.message + '<br><br>Check your API key in Settings.</div>';
+    else showToast('Failed to load more results');
   }
 }
 
-function rawgToGame(r) {
-  const platforms = (r.platforms||[]).map(p=>p.platform.name).join(', ');
-  const genres    = (r.genres||[]).map(g=>g.name).join(', ');
-  return {
-    id:          uid(),
-    rawgId:      r.id,
-    title:       r.name,
-    platform:    platforms,
-    genre:       genres,
-    releaseDate: r.released || null,
-    metacritic:  r.metacritic || null,
-    art:         r.background_image || null,
-    upcoming:    r.released ? new Date(r.released) > new Date() : true,
-    addedAt:     Date.now(),
-  };
+function buildRAWGParams(page=1) {
+  const key      = DB.rawgKey;
+  const keyword  = document.getElementById('sr-keyword').value.trim();
+  const platform = document.getElementById('sr-platform').value;
+  const genre    = document.getElementById('sr-genre').value;
+  const mcMin    = document.getElementById('sr-mc-min').value;
+  const mcMax    = document.getElementById('sr-mc-max').value;
+  const yearFrom = document.getElementById('sr-year-from').value;
+  const yearTo   = document.getElementById('sr-year-to').value;
+
+  const params = new URLSearchParams();
+  params.set('key', key);
+  params.set('page_size', '20');
+  params.set('page', String(page));
+  params.set('ordering', keyword ? '-relevance' : '-metacritic');
+  if (keyword)  params.set('search', keyword);
+  if (platform) params.set('platforms', rawgPlatformId(platform));
+  if (genre)    params.set('genres', genre);
+  if (mcMin)    params.set('metacritic', mcMin + ',' + (mcMax || '100'));
+  else if (mcMax) params.set('metacritic', '0,' + mcMax);
+  if (yearFrom || yearTo) {
+    params.set('dates', (yearFrom ? yearFrom+'-01-01' : '1970-01-01') + ',' + (yearTo ? yearTo+'-12-31' : '2030-12-31'));
+  }
+  if (activeTags.length) params.set('tags', activeTags.map(t=>t.toLowerCase().replace(/ /g,'-')).join(','));
+  return params.toString();
 }
 
-function renderSearchResults(released, upcoming, total) {
+function renderSearchResults(released, upcoming, total, hasMore) {
   const resultsEl = document.getElementById('search-results');
   const bl = DB.backlog, wl = DB.wishlist;
-
-  // Deduplicate upcoming from released
   const relIds = new Set(released.map(r=>r.id));
-  upcoming = upcoming.filter(u=>!relIds.has(u.id));
+  const filteredUpcoming = upcoming.filter(u=>!relIds.has(u.id));
 
-  let html = '';
-  const relCount = released.length, upCount = upcoming.length;
+  let html = '<div class="results-meta">'+released.length+' released &middot; '+filteredUpcoming.length+' upcoming</div>';
 
-  html += '<div class="results-meta">Showing '+relCount+' released &middot; '+upCount+' upcoming</div>';
-
+  if (filteredUpcoming.length) {
+    html += '<div class="section-header gold">'+ICONS.clock+' Upcoming ('+filteredUpcoming.length+')</div>';
+    filteredUpcoming.forEach(r => { html += buildSearchCard(rawgToGame(r), bl, wl, true); });
+    if (released.length) html += '<div class="section-divider"></div>';
+  }
   if (released.length) {
-    html += '<div class="section-header green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Released ('+relCount+')</div>';
+    html += '<div class="section-header green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Released ('+released.length+')</div>';
     released.forEach(r => { html += buildSearchCard(rawgToGame(r), bl, wl, false); });
   }
-  if (upcoming.length) {
-    if (html.includes('section-header')) html += '<div class="section-divider"></div>';
-    html += '<div class="section-header gold">'+ICONS.clock+' Upcoming ('+upCount+')</div>';
-    upcoming.forEach(r => { html += buildSearchCard(rawgToGame(r), bl, wl, true); });
-  }
-  if (!released.length && !upcoming.length) {
+  if (!released.length && !filteredUpcoming.length) {
     html += '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><p>No games found.<br>Try different search terms or filters.</p></div>';
+  }
+  if (hasMore) {
+    html += '<div class="load-more-wrap" id="btn-load-more-wrap"><button class="btn-load-more" onclick="doSearch(true)">Load more results</button></div>';
   }
 
   resultsEl.innerHTML = html;
@@ -960,7 +1054,7 @@ function buildSearchCard(g, bl, wl, forceUpcoming) {
         '<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>' +
         '<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'TBA')+'</span></div>' +
       '</div>' +
-      '<div class="card-actions"><div class="card-actions-left">'+blBtn+wlBtn+'</div><a class="btn btn-more" href="'+learnMoreURL(g.title)+'" target="_blank" rel="noopener">'+ICONS.external+' More</a></div>' +
+      '<div class="card-actions"><div class="card-actions-left">'+blBtn+wlBtn+'</div><button class="btn btn-more" onclick="openSheet(\'' + g.rawgId + '\',\'' + encodeURIComponent(JSON.stringify(g)) + '\')">' + ICONS.external + ' More</button></div>' +
     '</div></div>';
 }
 
@@ -1067,6 +1161,145 @@ document.getElementById('btn-clear-all').addEventListener('click', () => {
 });
 
 // =============================================
+// GAME DETAIL SHEET
+// =============================================
+let sheetTouchStartY = 0;
+
+function openSheet(rawgId, encoded) {
+  const g = JSON.parse(decodeURIComponent(encoded));
+  const sheet    = document.getElementById('game-sheet');
+  const backdrop = document.getElementById('sheet-backdrop');
+  document.getElementById('sheet-title').textContent = g.title;
+  const artEl = document.getElementById('sheet-art-img');
+  artEl.src = g.art || ''; artEl.alt = g.title;
+  const mc = g.metacritic;
+  let badges = '';
+  if (mc) { const cls = mc>=80?'mc-good':mc>=60?'mc-mid':'mc-low'; badges += '<span class="sheet-badge '+cls+'">MC '+mc+'</span>'; }
+  if (g.releaseDate) badges += '<span class="sheet-badge info">'+g.releaseDate+'</span>';
+  if (g.genre) g.genre.split(',').slice(0,2).forEach(gen => { badges += '<span class="sheet-badge info">'+gen.trim()+'</span>'; });
+  document.getElementById('sheet-badges').innerHTML = badges;
+  document.getElementById('sheet-body').innerHTML = '<div class="sheet-loading"><div class="spinner"></div> Loading details…</div>';
+  renderSheetActions(rawgId, encoded);
+  sheet.classList.add('open');
+  backdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  sheet.addEventListener('touchstart', sheetTouchStart, {passive:true});
+  sheet.addEventListener('touchend',   sheetTouchEnd,   {passive:true});
+  fetchSheetDetails(g);
+}
+
+function renderSheetActions(rawgId, enc) {
+  const g = JSON.parse(decodeURIComponent(enc));
+  const bl = DB.backlog, wl = DB.wishlist;
+  const inBL = bl.some(x=>x.title===g.title||x.rawgId===g.rawgId);
+  const inWL = wl.some(x=>x.title===g.title||x.rawgId===g.rawgId);
+  const up = isUpcoming(g);
+  const safeEnc = enc;
+  let a = '';
+  if (!up) {
+    a += inBL
+      ? '<button class="btn btn-added" disabled style="flex:1;justify-content:center">' + ICONS.check + ' In Backlog</button>'
+      : '<button class="btn btn-add-backlog" style="flex:1;justify-content:center" onclick="addSearchToBacklog(\'' + rawgId + '\',\'' + safeEnc + '\');renderSheetActions(\'' + rawgId + '\',\'' + safeEnc + '\')">' + ICONS.grid + ' + Backlog</button>';
+  }
+  a += inWL
+    ? '<button class="btn btn-added" disabled style="flex:1;justify-content:center">' + ICONS.check + ' In Wishlist</button>'
+    : '<button class="btn btn-add-wishlist" style="flex:1;justify-content:center" onclick="addSearchToWishlist(\'' + rawgId + '\',\'' + safeEnc + '\');renderSheetActions(\'' + rawgId + '\',\'' + safeEnc + '\')"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' style='width:11px;height:11px'><path d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'/></svg> + Wishlist</button>';
+  document.getElementById('sheet-actions').innerHTML = a;
+}
+
+async function fetchSheetDetails(g) {
+  const body = document.getElementById('sheet-body');
+  if (!g.rawgId || !DB.rawgKey) { body.innerHTML = buildSheetBody(g, null, []); return; }
+  try {
+    const [detailRes, ssRes] = await Promise.all([
+      fetch(RAWG_BASE+'/games/'+g.rawgId+'?key='+DB.rawgKey),
+      fetch(RAWG_BASE+'/games/'+g.rawgId+'/screenshots?key='+DB.rawgKey+'&page_size=8'),
+    ]);
+    const detail = detailRes.ok ? await detailRes.json() : null;
+    const ssData = ssRes.ok ? await ssRes.json() : null;
+    body.innerHTML = buildSheetBody(g, detail, ssData ? (ssData.results||[]) : []);
+  } catch(e) {
+    body.innerHTML = buildSheetBody(g, null, []);
+  }
+}
+
+function buildSheetBody(g, detail, screenshots) {
+  let html = '';
+  const desc = detail ? (detail.description_raw||detail.description||'').replace(/<[^>]+>/g,'').trim() : '';
+  if (desc) {
+    const short = desc.length>320 ? desc.substring(0,320)+'...' : desc;
+    html += '<div class="sheet-section"><div class="sheet-section-title">About</div><div class="sheet-desc">'+short+'</div></div>';
+  }
+  if (screenshots.length) {
+    html += '<div class="sheet-section"><div class="sheet-section-title">Screenshots</div><div class="sheet-screenshots">';
+    screenshots.forEach(s => { html += '<div class="sheet-screenshot"><img src="'+s.image+'" loading="lazy" /></div>'; });
+    html += '</div></div>';
+  }
+  const items = [];
+  if (detail && detail.playtime)    items.push(['Avg. Playtime', detail.playtime+' hrs']);
+  if (g.metacritic||detail&&detail.metacritic) items.push(['Metacritic', (g.metacritic||(detail&&detail.metacritic))+' / 100']);
+  if (detail && detail.esrb_rating) items.push(['Age Rating', detail.esrb_rating.name]);
+  if (g.releaseDate)                items.push(['Released', g.releaseDate]);
+  const devs = detail ? (detail.developers||[]).map(d=>d.name).join(', ') : '';
+  const pubs = detail ? (detail.publishers||[]).map(p=>p.name).join(', ') : '';
+  if (devs) items.push(['Developer', devs]);
+  if (pubs) items.push(['Publisher', pubs]);
+  if (items.length) {
+    html += '<div class="sheet-section"><div class="sheet-section-title">Details</div><div class="sheet-meta-grid">';
+    items.forEach(([l,v]) => { html += '<div class="sheet-meta-item"><div class="sheet-meta-label">'+l+'</div><div class="sheet-meta-value">'+v+'</div></div>'; });
+    html += '</div></div>';
+  }
+  const stores = detail ? (detail.stores||[]) : [];
+  if (stores.length) {
+    html += '<div class="sheet-section"><div class="sheet-section-title">Where to Buy</div><div class="sheet-stores">';
+    stores.forEach(s => {
+      const url = s.url || ('https://'+s.store.domain);
+      html += '<a class="sheet-store-btn" href="'+url+'" target="_blank" rel="noopener">'+ICONS.external+' '+s.store.name+'</a>';
+    });
+    html += '</div></div>';
+  }
+  if (!html) html = '<div class="sheet-desc" style="color:var(--text-muted);padding:8px 0">No additional details available.</div>';
+  return html;
+}
+
+function closeSheet() {
+  document.getElementById('game-sheet').classList.remove('open');
+  document.getElementById('sheet-backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('game-sheet').removeEventListener('touchstart', sheetTouchStart);
+  document.getElementById('game-sheet').removeEventListener('touchend',   sheetTouchEnd);
+}
+
+function sheetTouchStart(e) { sheetTouchStartY = e.touches[0].clientY; }
+function sheetTouchEnd(e) { if (e.changedTouches[0].clientY - sheetTouchStartY > 80) closeSheet(); }
+
+function openSheetFromGame(g) {
+  const enc = encodeURIComponent(JSON.stringify(g));
+  const id = g.rawgId || ('bl_' + g.id);
+  openSheet(id, enc);
+}
+
+// =============================================
+// PULL TO REFRESH
+// =============================================
+function initPullToRefresh(panelId, refreshFn) {
+  const panel = document.getElementById(panelId);
+  let startY = 0, pulling = false;
+  const indicator = document.createElement('div');
+  indicator.className = 'ptr-indicator';
+  indicator.innerHTML = '<div class="ptr-spinner"></div><span>Release to refresh</span>';
+  panel.insertBefore(indicator, panel.firstChild);
+  panel.addEventListener('touchstart', e => { if (panel.scrollTop === 0) { startY = e.touches[0].clientY; pulling = true; } }, {passive:true});
+  panel.addEventListener('touchmove',  e => { if (pulling && e.touches[0].clientY - startY > 60) indicator.classList.add('visible'); }, {passive:true});
+  panel.addEventListener('touchend',   e => {
+    if (!pulling) return; pulling = false;
+    const dist = e.changedTouches[0].clientY - startY;
+    if (dist > 60) { refreshFn(); setTimeout(() => indicator.classList.remove('visible'), 800); }
+    else indicator.classList.remove('visible');
+  }, {passive:true});
+}
+
+// =============================================
 // TAB NAVIGATION
 // =============================================
 function switchTab(tab) {
@@ -1099,8 +1332,11 @@ document.getElementById('wl-sort').addEventListener('change', renderWishlist);
 // INIT
 // =============================================
 seedData();
+restoreUIState();
 renderTags();
 renderBacklog();
+initPullToRefresh('panel-backlog', renderBacklog);
+initPullToRefresh('panel-wishlist', renderWishlist);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });

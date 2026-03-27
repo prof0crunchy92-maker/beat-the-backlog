@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Background -->
+  <rect width="192" height="192" rx="38" fill="#0d0d0f"/>
+
+  <!-- Controller body -->
+  <path d="M36 80 Q36 64 52 64 L140 64 Q156 64 156 80 L160 112 Q164 136 148 140 Q136 144 128 132 L120 120 L72 120 L64 132 Q56 144 44 140 Q28 136 32 112 Z" fill="#1e1e28" stroke="#3d8ef0" stroke-width="3"/>
+
+  <!-- Left D-pad vertical -->
+  <rect x="62" y="82" width="8" height="22" rx="3" fill="#3d8ef0"/>
+  <!-- Left D-pad horizontal -->
+  <rect x="55" y="89" width="22" height="8" rx="3" fill="#3d8ef0"/>
+
+  <!-- Right buttons -->
+  <circle cx="122" cy="88" r="5" fill="#2e9e5b"/>
+  <circle cx="134" cy="96" r="5" fill="#3d8ef0"/>
+  <circle cx="122" cy="104" r="5" fill="#e04444"/>
+  <circle cx="110" cy="96" r="5" fill="#c97c2a"/>
+
+  <!-- Left bumper grip -->
+  <path d="M52 64 Q56 52 72 52 L88 52 L88 64Z" fill="#2a2a36" stroke="#3d8ef0" stroke-width="2"/>
+  <!-- Right bumper grip -->
+  <path d="M140 64 Q136 52 120 52 L104 52 L104 64Z" fill="#2a2a36" stroke="#3d8ef0" stroke-width="2"/>
+
+  <!-- Center select/start dots -->
+  <circle cx="88" cy="93" r="4" fill="#2a2a36" stroke="#3d8ef0" stroke-width="1.5"/>
+  <circle cx="104" cy="93" r="4" fill="#2a2a36" stroke="#3d8ef0" stroke-width="1.5"/>
+
+  <!-- Analog stick left -->
+  <circle cx="75" cy="108" r="7" fill="#2a2a36" stroke="#5a5a7a" stroke-width="1.5"/>
+  <!-- Analog stick right -->
+  <circle cx="117" cy="108" r="7" fill="#2a2a36" stroke="#5a5a7a" stroke-width="1.5"/>
+</svg>

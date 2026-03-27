@@ -1338,15 +1338,38 @@ renderBacklog();
 initPullToRefresh('panel-backlog', renderBacklog);
 initPullToRefresh('panel-wishlist', renderWishlist);
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
-}
-</script>
-</body>
-</html>
 document.getElementById('btn-save-keys').addEventListener('click', () => {
   const rawg = document.getElementById('key-rawg').value.trim();
   if (rawg && !rawg.startsWith('•')) DB.rawgKey = rawg;
   renderSettings();
   showToast('✓ Key saved');
 });
+
+document.getElementById('btn-clear-cache').addEventListener('click', () => {
+  DB.imgCache = {};
+  showToast('Image cache cleared');
+});
+
+document.getElementById('btn-clear-all').addEventListener('click', () => {
+  if (!confirm('This will permanently delete your backlog and wishlist. Are you sure?')) return;
+  DB.backlog = []; DB.wishlist = [];
+  showToast('All data reset');
+  renderBacklog(); renderWishlist(); updateStats();
+});
+
+['key-rawg'].forEach(id => {
+  document.getElementById(id).addEventListener('focus', function() {
+    if (this.value.startsWith('•')) this.value = '';
+    this.type = 'text';
+  });
+  document.getElementById(id).addEventListener('blur', function() {
+    this.type = 'password';
+  });
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+</script>
+</body>
+</html>

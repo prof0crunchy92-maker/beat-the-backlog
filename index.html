@@ -730,7 +730,6 @@ function renderBacklog() {
 }
 
 function buildBacklogCard(g) {
-  const key = storeGame(g);
   const mc  = g.metacritic;
   const mcH = mc ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>' : '<span class="metacritic-badge none">-</span>';
   const sl  = {new:'Not Started',started:'Playing',completed:'Completed',abandoned:'Abandoned'};
@@ -749,7 +748,7 @@ function buildBacklogCard(g) {
         +'<button class="btn btn-drop'+(g.status==='abandoned'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'abandoned\')">Drop</button>'
         +'<button class="btn btn-remove" onclick="removeFromBacklog(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>'
       +'</div>'
-      +'<button class="btn btn-more" onclick="openSheetByKey(\''+key+'\')">'+ICONS.external+' More</button>'
+      +'<button class="btn btn-more" onclick="openSheetFromDB('backlog',''+g.id+'')">' +ICONS.external+' More</button>'
       +'</div>'
     +'</div></div>';
 }
@@ -824,7 +823,6 @@ function renderWishlist() {
 }
 
 function buildWishlistCard(g) {
-  const key = storeGame(g);
   const up  = isUpcoming(g);
   const mc  = g.metacritic;
   const mcH = mc
@@ -843,7 +841,7 @@ function buildWishlistCard(g) {
         +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'Upcoming')+'</span></div>'
       +'</div>'
       +'<div class="card-actions"><div class="card-actions-left">'+actionBtns+'</div>'
-      +'<button class="btn btn-more" onclick="openSheetByKey(\''+key+'\')">'+ICONS.external+' More</button>'
+      +'<button class="btn btn-more" onclick="openSheetFromDB('wishlist',''+g.id+'')">' +ICONS.external+' More</button>'
       +'</div>'
     +'</div></div>';
 }
@@ -1104,6 +1102,15 @@ function clearSearch() {
 // GAME DETAIL SHEET
 // =============================================
 let sheetTouchStartY = 0, sheetDragging = false;
+
+function openSheetFromDB(source, id) {
+  // Always looks up fresh from localStorage - never stale
+  const list = source === 'backlog' ? DB.backlog : DB.wishlist;
+  const g = list.find(x => x.id === id);
+  if (!g) { showToast('Could not open details'); return; }
+  const key = storeGame(g);
+  openSheet(key, g);
+}
 
 function openSheetByKey(key) {
   const g = gameStore.get(key);

@@ -537,46 +537,43 @@
 // DATA LAYER
 // =============================================
 const DB = {
-  get backlog()         { return JSON.parse(localStorage.getItem('btb_backlog') || '[]'); },
-  set backlog(v)        { localStorage.setItem('btb_backlog', JSON.stringify(v)); },
-  get wishlist()        { return JSON.parse(localStorage.getItem('btb_wishlist') || '[]'); },
-  set wishlist(v)       { localStorage.setItem('btb_wishlist', JSON.stringify(v)); },
-  get rawgKey()         { return localStorage.getItem('btb_rawg_key') || ''; },
-  set rawgKey(v)        { localStorage.setItem('btb_rawg_key', v); },
-
-  get imgCache()        { return JSON.parse(localStorage.getItem('btb_img_cache') || '{}'); },
-  get uiState()         { return JSON.parse(localStorage.getItem('btb_ui_state') || '{}'); },
-  set uiState(v)        { localStorage.setItem('btb_ui_state', JSON.stringify(v)); },
-  set imgCache(v)       { localStorage.setItem('btb_img_cache', JSON.stringify(v)); },
+  get backlog()  { return JSON.parse(localStorage.getItem('btb_backlog')  || '[]'); },
+  set backlog(v) { localStorage.setItem('btb_backlog',  JSON.stringify(v)); },
+  get wishlist()  { return JSON.parse(localStorage.getItem('btb_wishlist') || '[]'); },
+  set wishlist(v) { localStorage.setItem('btb_wishlist', JSON.stringify(v)); },
+  get rawgKey()   { return localStorage.getItem('btb_rawg_key') || ''; },
+  set rawgKey(v)  { localStorage.setItem('btb_rawg_key', v); },
+  get imgCache()  { return JSON.parse(localStorage.getItem('btb_img_cache') || '{}'); },
+  set imgCache(v) { localStorage.setItem('btb_img_cache', JSON.stringify(v)); },
+  get uiState()   { return JSON.parse(localStorage.getItem('btb_ui_state') || '{}'); },
+  set uiState(v)  { localStorage.setItem('btb_ui_state', JSON.stringify(v)); },
 };
 
 // =============================================
-// SEED DATA — only runs on genuine first install
-// Uses a separate flag so emptying your lists
-// doesn't trigger a re-seed on next load.
+// SEED DATA
 // =============================================
 function seedData() {
-  if (localStorage.getItem('btb_seeded')) return; // already initialised — never re-seed
+  if (localStorage.getItem('btb_seeded')) return;
   localStorage.setItem('btb_seeded', '1');
   if (DB.backlog.length === 0) {
     DB.backlog = [
-      { id:'s1', title:'Final Fantasy XVI',    platform:'PC, PlayStation 5',                   genre:'Action, RPG',        releaseDate:'2023-06-22', metacritic:88, status:'started',   addedAt:Date.now()-6e6, art:'https://media.rawg.io/media/games/da8/da84e08a5f1c1adccbdebcc8e4e30e63.jpg' },
-      { id:'s2', title:'Ghost of Tsushima',    platform:'PC, PlayStation 5, PlayStation 4',    genre:'Adventure, Action, RPG',releaseDate:'2020-07-17',metacritic:83, status:'started',   addedAt:Date.now()-5e6, art:'https://media.rawg.io/media/games/f55/f558e1c10a26a7a7cca73b4e817cba50.jpg' },
-      { id:'s3', title:'God of War: Ragnar\u00f6k',platform:'PC, PlayStation 5, PlayStation 4',genre:'Action',              releaseDate:'2022-11-09', metacritic:94, status:'started',   addedAt:Date.now()-4e6, art:'https://media.rawg.io/media/games/fc7/fc70b3c82753dcae35e13e18e879e683.jpg' },
-      { id:'s4', title:'Hogwarts Legacy',       platform:'PC, PlayStation 5, Xbox One',         genre:'Action, RPG',        releaseDate:'2023-02-10', metacritic:84, status:'new',       addedAt:Date.now()-3e6, art:'https://media.rawg.io/media/games/f24/f2493a0f4ac9c1f5fc31a05e56a7eb35.jpg' },
-      { id:'s5', title:'Lies of P',             platform:'PC, PlayStation 5, Xbox Series S/X',  genre:'Action, RPG',        releaseDate:'2023-09-19', metacritic:80, status:'new',       addedAt:Date.now()-2e6, art:'https://media.rawg.io/media/games/d11/d116f1b08fb60d81dc64af1aa1e7cb5f.jpg' },
-      { id:'s6', title:'Elden Ring',            platform:'PC, PlayStation 5, Xbox Series S/X',  genre:'Action, RPG',        releaseDate:'2022-02-25', metacritic:96, status:'completed', addedAt:Date.now()-9e6, art:'https://media.rawg.io/media/games/b29/b294fdd866dcdb643e7bab370a552855.jpg' },
-      { id:'s7', title:'Cyberpunk 2077',        platform:'PC, PlayStation 5, Xbox Series S/X',  genre:'Action, RPG',        releaseDate:'2020-12-10', metacritic:86, status:'completed', addedAt:Date.now()-8e6, art:'https://media.rawg.io/media/games/26d/26d4437715bee60138dab4a7c8c59c92.jpg' },
-      { id:'s8', title:'Forspoken',             platform:'PC, PlayStation 5',                   genre:'Action, RPG',        releaseDate:'2023-01-24', metacritic:67, status:'abandoned', addedAt:Date.now()-1e6, art:'https://media.rawg.io/media/games/98a/98a468a3ac9ddb1e7b09f9b6c34f87f8.jpg' },
+      { id:'s1', title:'Final Fantasy XVI',      platform:'PC, PlayStation 5',                  genre:'Action, RPG',          releaseDate:'2023-06-22', metacritic:88, status:'started',   addedAt:Date.now()-6e6, art:'https://media.rawg.io/media/games/da8/da84e08a5f1c1adccbdebcc8e4e30e63.jpg' },
+      { id:'s2', title:'Ghost of Tsushima',      platform:'PC, PlayStation 5, PlayStation 4',   genre:'Adventure, Action, RPG',releaseDate:'2020-07-17', metacritic:83, status:'started',   addedAt:Date.now()-5e6, art:'https://media.rawg.io/media/games/f55/f558e1c10a26a7a7cca73b4e817cba50.jpg' },
+      { id:'s3', title:'God of War: Ragnar\u00f6k', platform:'PC, PlayStation 5, PlayStation 4',genre:'Action',               releaseDate:'2022-11-09', metacritic:94, status:'started',   addedAt:Date.now()-4e6, art:'https://media.rawg.io/media/games/fc7/fc70b3c82753dcae35e13e18e879e683.jpg' },
+      { id:'s4', title:'Hogwarts Legacy',         platform:'PC, PlayStation 5, Xbox One',        genre:'Action, RPG',          releaseDate:'2023-02-10', metacritic:84, status:'new',       addedAt:Date.now()-3e6, art:'https://media.rawg.io/media/games/f24/f2493a0f4ac9c1f5fc31a05e56a7eb35.jpg' },
+      { id:'s5', title:'Lies of P',               platform:'PC, PlayStation 5, Xbox Series S/X', genre:'Action, RPG',          releaseDate:'2023-09-19', metacritic:80, status:'new',       addedAt:Date.now()-2e6, art:'https://media.rawg.io/media/games/d11/d116f1b08fb60d81dc64af1aa1e7cb5f.jpg' },
+      { id:'s6', title:'Elden Ring',              platform:'PC, PlayStation 5, Xbox Series S/X', genre:'Action, RPG',          releaseDate:'2022-02-25', metacritic:96, status:'completed', addedAt:Date.now()-9e6, art:'https://media.rawg.io/media/games/b29/b294fdd866dcdb643e7bab370a552855.jpg' },
+      { id:'s7', title:'Cyberpunk 2077',          platform:'PC, PlayStation 5, Xbox Series S/X', genre:'Action, RPG',          releaseDate:'2020-12-10', metacritic:86, status:'completed', addedAt:Date.now()-8e6, art:'https://media.rawg.io/media/games/26d/26d4437715bee60138dab4a7c8c59c92.jpg' },
+      { id:'s8', title:'Forspoken',               platform:'PC, PlayStation 5',                  genre:'Action, RPG',          releaseDate:'2023-01-24', metacritic:67, status:'abandoned', addedAt:Date.now()-1e6, art:'https://media.rawg.io/media/games/98a/98a468a3ac9ddb1e7b09f9b6c34f87f8.jpg' },
     ];
   }
   if (DB.wishlist.length === 0) {
     DB.wishlist = [
-      { id:'w1', title:"Marvel's Wolverine",           platform:'PlayStation 5',                          genre:'Action',         releaseDate:'2026-09-15', metacritic:null, upcoming:true,  addedAt:Date.now()-5e5, art:'https://media.rawg.io/media/games/5a4/5a44112251d70a25291cc33757220fce.jpg' },
-      { id:'w2', title:'Control Resonant',             platform:'PC, PlayStation 5, Xbox Series S/X',    genre:'Adventure, Action',releaseDate:'2026-12-31',metacritic:null, upcoming:true,  addedAt:Date.now()-4e5, art:'https://media.rawg.io/media/games/5bb/5bb55ccb8205901b7b4a3913d7f3f824.jpg' },
-      { id:'w3', title:'Resident Evil 9: Requiem',     platform:'PC, PlayStation 5, Xbox Series S/X',    genre:'Action, Horror', releaseDate:'2026-02-27', metacritic:null, upcoming:false, addedAt:Date.now()-3e5, art:'https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg' },
-      { id:'w4', title:'Clair Obscur: Expedition 33',  platform:'PC, PlayStation 5, Xbox Series S/X',    genre:'RPG',            releaseDate:'2025-04-24', metacritic:91,   upcoming:false, addedAt:Date.now()-2e5, art:'https://media.rawg.io/media/games/5eb/5eb49a5e4f4d3a69b37b1b5a6e3a57b3.jpg' },
-      { id:'w5', title:'Alan Wake 2',                  platform:'PC, PlayStation 5, Xbox Series S/X',    genre:'Action, Horror', releaseDate:'2023-10-27', metacritic:89,   upcoming:false, addedAt:Date.now()-1e5, art:'https://media.rawg.io/media/games/c8a/c8a85a8c6d59d9e0b3a02ef63ce9d9af.jpg' },
+      { id:'w1', title:"Marvel's Wolverine",          platform:'PlayStation 5',                         genre:'Action',          releaseDate:'2026-09-15', metacritic:null, upcoming:true,  addedAt:Date.now()-5e5, art:'https://media.rawg.io/media/games/5a4/5a44112251d70a25291cc33757220fce.jpg' },
+      { id:'w2', title:'Control Resonant',            platform:'PC, PlayStation 5, Xbox Series S/X',   genre:'Adventure, Action',releaseDate:'2026-12-31', metacritic:null, upcoming:true,  addedAt:Date.now()-4e5, art:'https://media.rawg.io/media/games/5bb/5bb55ccb8205901b7b4a3913d7f3f824.jpg' },
+      { id:'w3', title:'Resident Evil 9: Requiem',    platform:'PC, PlayStation 5, Xbox Series S/X',   genre:'Action, Horror',  releaseDate:'2026-02-27', metacritic:null, upcoming:false, addedAt:Date.now()-3e5, art:'https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg' },
+      { id:'w4', title:'Clair Obscur: Expedition 33', platform:'PC, PlayStation 5, Xbox Series S/X',   genre:'RPG',             releaseDate:'2025-04-24', metacritic:91,   upcoming:false, addedAt:Date.now()-2e5, art:'https://media.rawg.io/media/games/5eb/5eb49a5e4f4d3a69b37b1b5a6e3a57b3.jpg' },
+      { id:'w5', title:'Alan Wake 2',                 platform:'PC, PlayStation 5, Xbox Series S/X',   genre:'Action, Horror',  releaseDate:'2023-10-27', metacritic:89,   upcoming:false, addedAt:Date.now()-1e5, art:'https://media.rawg.io/media/games/c8a/c8a85a8c6d59d9e0b3a02ef63ce9d9af.jpg' },
     ];
   }
 }
@@ -617,8 +614,8 @@ const ICONS = {
   trash:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg>',
   clock:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
   grid:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
-  save:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
   check:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+  bookmark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>',
 };
 
 function artImg(url, title) {
@@ -628,7 +625,28 @@ function artImg(url, title) {
 
 function platShort(p) {
   if (!p) return 'Unknown';
-  return p.length > 30 ? p.substring(0, 28) + '\u2026' : p;
+  return p.length > 30 ? p.substring(0,28) + '\u2026' : p;
+}
+
+// =============================================
+// UI STATE PERSISTENCE
+// =============================================
+function saveUIState() {
+  DB.uiState = {
+    blSearch: document.getElementById('backlog-search').value,
+    blStatus: document.getElementById('backlog-status-filter').value,
+    blSort:   document.getElementById('backlog-sort').value,
+    wlSort:   document.getElementById('wl-sort').value,
+  };
+}
+
+function restoreUIState() {
+  const s = DB.uiState;
+  if (!s) return;
+  if (s.blSearch !== undefined) document.getElementById('backlog-search').value = s.blSearch;
+  if (s.blStatus !== undefined) document.getElementById('backlog-status-filter').value = s.blStatus;
+  if (s.blSort   !== undefined) document.getElementById('backlog-sort').value = s.blSort;
+  if (s.wlSort   !== undefined) document.getElementById('wl-sort').value = s.wlSort;
 }
 
 // =============================================
@@ -644,39 +662,18 @@ function updateStats() {
 // =============================================
 // BACKLOG
 // =============================================
-function saveUIState() {
-  DB.uiState = {
-    blSearch: document.getElementById('backlog-search').value,
-    blStatus: document.getElementById('backlog-status-filter').value,
-    blSort:   document.getElementById('backlog-sort').value,
-    wlSearch: document.getElementById('wl-search').value,
-    wlGenre:  document.getElementById('wl-genre-filter').value,
-    wlPlat:   document.getElementById('wl-platform-filter').value,
-    wlSort:   document.getElementById('wl-sort').value,
-  };
-}
-
-function restoreUIState() {
-  const s = DB.uiState;
-  if (!s) return;
-  if (s.blSearch !== undefined) document.getElementById('backlog-search').value = s.blSearch;
-  if (s.blStatus !== undefined) document.getElementById('backlog-status-filter').value = s.blStatus;
-  if (s.blSort   !== undefined) document.getElementById('backlog-sort').value = s.blSort;
-  if (s.wlSort   !== undefined) document.getElementById('wl-sort').value = s.wlSort;
-}
-
 function renderBacklog() {
+  saveUIState();
   const container  = document.getElementById('backlog-list');
   const searchVal  = document.getElementById('backlog-search').value.toLowerCase().trim();
   const statusFilt = document.getElementById('backlog-status-filter').value;
   const sortBy     = document.getElementById('backlog-sort').value;
-  saveUIState();
 
   let games = DB.backlog;
-  if (searchVal) games = games.filter(g => g.title.toLowerCase().includes(searchVal));
+  if (searchVal)        games = games.filter(g => g.title.toLowerCase().includes(searchVal));
   if (statusFilt !== 'all') games = games.filter(g => g.status === statusFilt);
   games = [...games].sort((a,b) => {
-    if (sortBy==='title') return a.title.localeCompare(b.title);
+    if (sortBy==='title')      return a.title.localeCompare(b.title);
     if (sortBy==='metacritic') return (b.metacritic||0)-(a.metacritic||0);
     return b.addedAt - a.addedAt;
   });
@@ -686,21 +683,24 @@ function renderBacklog() {
   const abandoned = games.filter(g => g.status==='abandoned');
 
   let html = '';
-  if (statusFilt==='all'||statusFilt==='new'||statusFilt==='started') {
-    if (active.length) { html += '<div class="section-header blue">'+ICONS.grid+' Active ('+active.length+')</div>'; active.forEach(g=>{html+=buildBacklogCard(g);}); }
+  if (!statusFilt || statusFilt==='all' || statusFilt==='new' || statusFilt==='started') {
+    if (active.length) {
+      html += '<div class="section-header blue">'+ICONS.grid+' Active ('+active.length+')</div>';
+      active.forEach(g => { html += buildBacklogCard(g); });
+    }
   }
-  if (statusFilt==='all'||statusFilt==='completed') {
+  if (!statusFilt || statusFilt==='all' || statusFilt==='completed') {
     if (completed.length) {
       if (html) html += '<div class="section-divider"></div>';
       html += '<div class="section-header green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Completed ('+completed.length+')</div>';
-      completed.forEach(g=>{html+=buildBacklogCard(g);});
+      completed.forEach(g => { html += buildBacklogCard(g); });
     }
   }
-  if (statusFilt==='all'||statusFilt==='abandoned') {
+  if (!statusFilt || statusFilt==='all' || statusFilt==='abandoned') {
     if (abandoned.length) {
       if (html) html += '<div class="section-divider"></div>';
       html += '<div class="section-header red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Abandoned ('+abandoned.length+')</div>';
-      abandoned.forEach(g=>{html+=buildBacklogCard(g);});
+      abandoned.forEach(g => { html += buildBacklogCard(g); });
     }
   }
   if (!html) html = '<div class="empty-state">'+ICONS.grid+'<p>Your backlog is empty.<br>Search for games to add them.</p></div>';
@@ -709,37 +709,42 @@ function renderBacklog() {
 }
 
 function buildBacklogCard(g) {
-  const mc = g.metacritic;
+  const mc  = g.metacritic;
   const mcH = mc ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>' : '<span class="metacritic-badge none">-</span>';
-  const sl = {new:'Not Started',started:'Playing',completed:'Completed',abandoned:'Abandoned'};
-  return '<div class="game-card status-'+g.status+'" data-id="'+g.id+'">' +
-    '<div class="card-art">'+artImg(g.art,g.title)+'</div>' +
-    '<div class="card-body">' +
-      '<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>' +
-      '<div class="card-meta-block">' +
-        '<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>' +
-        '<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'-')+'</span></div>' +
-        '<div class="card-status-dot"><span class="dot '+g.status+'"></span><span class="status-label '+g.status+'">'+sl[g.status]+'</span></div>' +
-      '</div>' +
-      '<div class="card-actions"><div class="card-actions-left">' +
-        '<button class="btn btn-started'+(g.status==='started'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'started\')">Playing</button>' +
-        '<button class="btn btn-done'+(g.status==='completed'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'completed\')">Done</button>' +
-        '<button class="btn btn-drop'+(g.status==='abandoned'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'abandoned\')">Drop</button>' +
-        '<button class="btn btn-remove" onclick="removeFromBacklog(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>' +
-      '</div><button class="btn btn-more" onclick="openSheetFromGame(g)">'+ICONS.external+' More</button></div>' +
-    '</div></div>';
+  const sl  = {new:'Not Started',started:'Playing',completed:'Completed',abandoned:'Abandoned'};
+  const enc = encodeURIComponent(JSON.stringify(g));
+  return '<div class="game-card status-'+g.status+'" data-id="'+g.id+'">'
+    +'<div class="card-art">'+artImg(g.art,g.title)+'</div>'
+    +'<div class="card-body">'
+      +'<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>'
+      +'<div class="card-meta-block">'
+        +'<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>'
+        +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'-')+'</span></div>'
+        +'<div class="card-status-dot"><span class="dot '+g.status+'"></span><span class="status-label '+g.status+'">'+sl[g.status]+'</span></div>'
+      +'</div>'
+      +'<div class="card-actions"><div class="card-actions-left">'
+        +'<button class="btn btn-started'+(g.status==='started'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'started\')">Playing</button>'
+        +'<button class="btn btn-done'+(g.status==='completed'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'completed\')">Done</button>'
+        +'<button class="btn btn-drop'+(g.status==='abandoned'?' active':'')+'" onclick="setBacklogStatus(\''+g.id+'\',\'abandoned\')">Drop</button>'
+        +'<button class="btn btn-remove" onclick="removeFromBacklog(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>'
+      +'</div>'
+      +'<button class="btn btn-more" onclick="openSheet(\''+g.id+'\',\''+enc+'\')">'+ICONS.external+' More</button>'
+      +'</div>'
+    +'</div></div>';
 }
 
 function setBacklogStatus(id, status) {
-  const bl = DB.backlog, idx = bl.findIndex(g=>g.id===id);
+  const bl = DB.backlog, idx = bl.findIndex(g => g.id===id);
   if (idx===-1) return;
   bl[idx].status = bl[idx].status===status ? 'new' : status;
-  DB.backlog = bl; renderBacklog();
+  DB.backlog = bl;
+  renderBacklog();
 }
 
 function removeFromBacklog(id) {
-  DB.backlog = DB.backlog.filter(g=>g.id!==id);
-  showToast('Removed from backlog'); renderBacklog();
+  DB.backlog = DB.backlog.filter(g => g.id!==id);
+  showToast('Removed from backlog');
+  renderBacklog();
 }
 
 // =============================================
@@ -749,102 +754,109 @@ function populateWishlistFilters() {
   const games = DB.wishlist;
   const genres    = [...new Set(games.flatMap(g=>(g.genre||'').split(',').map(s=>s.trim()).filter(Boolean)))].sort();
   const platforms = [...new Set(games.flatMap(g=>(g.platform||'').split(',').map(s=>s.trim()).filter(Boolean)))].sort();
-  const gSel=document.getElementById('wl-genre-filter'), pSel=document.getElementById('wl-platform-filter');
-  const gv=gSel.value, pv=pSel.value;
-  gSel.innerHTML='<option value="all">Any Genre</option>'+genres.map(g=>'<option value="'+g+'">'+g+'</option>').join('');
-  pSel.innerHTML='<option value="all">Any Platform</option>'+platforms.map(p=>'<option value="'+p+'">'+p+'</option>').join('');
-  gSel.value=gv; pSel.value=pv;
+  const gSel = document.getElementById('wl-genre-filter');
+  const pSel = document.getElementById('wl-platform-filter');
+  const gv = gSel.value, pv = pSel.value;
+  gSel.innerHTML = '<option value="all">Any Genre</option>'    + genres.map(g=>'<option value="'+g+'">'+g+'</option>').join('');
+  pSel.innerHTML = '<option value="all">Any Platform</option>' + platforms.map(p=>'<option value="'+p+'">'+p+'</option>').join('');
+  gSel.value = gv; pSel.value = pv;
 }
 
 function renderWishlist() {
+  saveUIState();
   populateWishlistFilters();
   const searchVal = document.getElementById('wl-search').value.toLowerCase().trim();
   const genreFilt = document.getElementById('wl-genre-filter').value;
   const platFilt  = document.getElementById('wl-platform-filter').value;
   const sortBy    = document.getElementById('wl-sort').value;
 
-  saveUIState();
   let games = DB.wishlist;
-  if (searchVal)         games = games.filter(g=>g.title.toLowerCase().includes(searchVal));
-  if (genreFilt!=='all') games = games.filter(g=>(g.genre||'').includes(genreFilt));
-  if (platFilt!=='all')  games = games.filter(g=>(g.platform||'').includes(platFilt));
+  if (searchVal)         games = games.filter(g => g.title.toLowerCase().includes(searchVal));
+  if (genreFilt!=='all') games = games.filter(g => (g.genre||'').includes(genreFilt));
+  if (platFilt!=='all')  games = games.filter(g => (g.platform||'').includes(platFilt));
   games = [...games].sort((a,b) => {
     if (sortBy==='title')   return a.title.localeCompare(b.title);
-    if (sortBy==='release') { const da=a.releaseDate?new Date(a.releaseDate):new Date('9999'), db=b.releaseDate?new Date(b.releaseDate):new Date('9999'); return da-db; }
+    if (sortBy==='release') {
+      const da = a.releaseDate ? new Date(a.releaseDate) : new Date('9999');
+      const db = b.releaseDate ? new Date(b.releaseDate) : new Date('9999');
+      return da - db;
+    }
     return b.addedAt - a.addedAt;
   });
 
-  const released = games.filter(g=>!isUpcoming(g));
-  const upcoming = games.filter(g=>isUpcoming(g));
+  const released = games.filter(g => !isUpcoming(g));
+  const upcoming = games.filter(g =>  isUpcoming(g));
   let html = '';
 
   if (released.length) {
-    html += '<div class="section-header gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg> Released ('+released.length+')</div>';
-    released.forEach(g=>{html+=buildWishlistCard(g);});
+    html += '<div class="section-header gold">'+ICONS.bookmark+' Released ('+released.length+')</div>';
+    released.forEach(g => { html += buildWishlistCard(g); });
   }
   if (upcoming.length) {
     if (html) html += '<div class="section-divider"></div>';
     html += '<div class="section-header gold">'+ICONS.clock+' Upcoming ('+upcoming.length+')</div>';
-    upcoming.forEach(g=>{html+=buildWishlistCard(g);});
+    upcoming.forEach(g => { html += buildWishlistCard(g); });
   }
-  if (!html) html = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg><p>Your wishlist is empty.<br>Search for games to add them.</p></div>';
-
+  if (!html) html = '<div class="empty-state">'+ICONS.bookmark+'<p>Your wishlist is empty.<br>Search for games to add them.</p></div>';
   document.getElementById('wishlist-list').innerHTML = html;
   updateStats();
 }
 
 function buildWishlistCard(g) {
-  const up = isUpcoming(g);
-  const mc = g.metacritic;
-  const mcH = mc ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>'
-                 : (up ? '<span class="upcoming-badge">'+ICONS.clock+'Upcoming</span>' : '<span class="metacritic-badge none">-</span>');
-  const actions = up
+  const up  = isUpcoming(g);
+  const mc  = g.metacritic;
+  const mcH = mc
+    ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>'
+    : (up ? '<span class="upcoming-badge">'+ICONS.clock+'Upcoming</span>' : '<span class="metacritic-badge none">-</span>');
+  const enc = encodeURIComponent(JSON.stringify(g));
+  const actionBtns = up
     ? '<button class="btn btn-remove" onclick="removeFromWishlist(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>'
-    : '<button class="btn btn-to-backlog" onclick="moveWishlistToBacklog(\''+g.id+'\')">'+ICONS.grid+' +&nbsp;Backlog</button><button class="btn btn-remove" onclick="removeFromWishlist(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>';
-  return '<div class="wl-card'+(up?' upcoming':'')+'" data-id="'+g.id+'">' +
-    '<div class="card-art">'+artImg(g.art,g.title)+'</div>' +
-    '<div class="card-body">' +
-      '<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>' +
-      '<div class="card-meta-block">' +
-        '<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>' +
-        '<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'Upcoming')+'</span></div>' +
-      '</div>' +
-      '<div class="card-actions"><div class="card-actions-left">'+actions+'</div><button class="btn btn-more" onclick="openSheetFromGame(g)">'+ICONS.external+' More</button></div>' +
-    '</div></div>';
+    : '<button class="btn btn-to-backlog" onclick="moveWishlistToBacklog(\''+g.id+'\')">'+ICONS.grid+' +&nbsp;Backlog</button>'
+      +'<button class="btn btn-remove" onclick="removeFromWishlist(\''+g.id+'\')" title="Remove">'+ICONS.trash+'</button>';
+  return '<div class="wl-card'+(up?' upcoming':'')+'" data-id="'+g.id+'">'
+    +'<div class="card-art">'+artImg(g.art,g.title)+'</div>'
+    +'<div class="card-body">'
+      +'<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>'
+      +'<div class="card-meta-block">'
+        +'<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>'
+        +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'Upcoming')+'</span></div>'
+      +'</div>'
+      +'<div class="card-actions"><div class="card-actions-left">'+actionBtns+'</div>'
+      +'<button class="btn btn-more" onclick="openSheet(\''+g.id+'\',\''+enc+'\')">'+ICONS.external+' More</button>'
+      +'</div>'
+    +'</div></div>';
 }
 
 function removeFromWishlist(id) {
-  DB.wishlist = DB.wishlist.filter(g=>g.id!==id);
-  showToast('Removed from wishlist'); renderWishlist();
+  DB.wishlist = DB.wishlist.filter(g => g.id!==id);
+  showToast('Removed from wishlist');
+  renderWishlist();
 }
 
 function moveWishlistToBacklog(id) {
-  const wl=DB.wishlist, game=wl.find(g=>g.id===id);
+  const wl = DB.wishlist, game = wl.find(g => g.id===id);
   if (!game) return;
-  const bl=DB.backlog;
-  if (bl.find(g=>g.title===game.title)) { showToast('Already in backlog'); return; }
+  const bl = DB.backlog;
+  if (bl.find(g => g.title===game.title)) { showToast('Already in backlog'); return; }
   bl.push({...game, id:uid(), status:'new', addedAt:Date.now()});
-  DB.backlog=bl; DB.wishlist=wl.filter(g=>g.id!==id);
-  showToast('\u2713 Moved to backlog!'); renderWishlist();
+  DB.backlog = bl;
+  DB.wishlist = wl.filter(g => g.id!==id);
+  showToast('\u2713 Moved to backlog!');
+  renderWishlist();
 }
 
 // =============================================
 // SEARCH — TAGS
 // =============================================
 const TAGS = [
-  // Vibes & Style
-  'Cosy','Relaxing','Dark','Atmospheric','Psychedelic','Anime','Pixel Art','Retro','Minimalist',
-  // Gameplay
+  'Cosy','Relaxing','Dark','Atmospheric','Anime','Pixel Art','Retro',
   'Roguelike','Roguelite','Soulslike','Bullet Hell','Metroidvania','Hack and Slash',
   'Stealth','Survival','Sandbox','Open World','Linear','Narrative','Walking Simulator',
-  'Tower Defense','Turn-based','Real-time','Tactical','Deck-building','Rhythm',
+  'Tower Defense','Turn-based','Tactical','Deck-building','Rhythm',
   'Fishing','Farming','Crafting','Base Building','Exploration','Puzzle',
-  // Multiplayer
   'Co-op','Local Co-op','Online Multiplayer','PvP','Battle Royale','MMO',
-  // Setting & Tone
   'Horror','Sci-fi','Fantasy','Post-apocalyptic','Cyberpunk','Noir','Historical',
-  'Space','Underwater','Medieval','Dystopian','Steampunk','Lovecraftian','Superhero',
-  // Meta
+  'Space','Medieval','Dystopian','Steampunk','Lovecraftian','Superhero',
   'Difficult','Casual','Short','Long','Story-rich','Choices Matter','Multiple Endings',
   'Replay Value','Hidden Gem','Underrated','Speedrun-friendly','Completionist',
 ];
@@ -852,7 +864,7 @@ let activeTags = [];
 
 function renderTags() {
   document.getElementById('tag-chips').innerHTML = TAGS.map(t =>
-    '<button class="tag-chip'+(activeTags.includes(t)?' active':'')+'" onclick="toggleTag(\''+t+'\')">'  +t+'</button>'
+    '<button class="tag-chip'+(activeTags.includes(t)?' active':'')+'" onclick="toggleTag(\''+t+'\')">'+t+'</button>'
   ).join('');
   const badge = document.getElementById('tags-active-count');
   if (activeTags.length > 0) { badge.textContent = activeTags.length; badge.classList.remove('hidden'); }
@@ -865,116 +877,31 @@ function toggleTag(t) {
 }
 
 function toggleTagsPanel() {
-  const panel   = document.getElementById('tags-panel');
-  const chevron = document.getElementById('tags-chevron');
-  panel.classList.toggle('open');
-  chevron.classList.toggle('open');
+  document.getElementById('tags-panel').classList.toggle('open');
+  document.getElementById('tags-chevron').classList.toggle('open');
 }
 
-
+// =============================================
+// SEARCH — RAWG API
+// =============================================
 const RAWG_BASE = 'https://api.rawg.io/api';
+let srPage = 1, srHasMore = false, srLastReleased = [], srLastUpcoming = [];
 
-// Map slug to RAWG platform IDs
 function rawgPlatformId(slug) {
   const map = {
-    // Current gen
-    'pc':'4', 'playstation5':'187', 'xbox-series-x':'186', 'nintendo-switch':'7',
-    'android':'21', 'ios':'3', 'macos':'5', 'linux':'6',
-    // 7th/8th gen
-    'playstation4':'18', 'xbox-one':'1', 'ps3':'16', 'xbox360':'14',
-    'wii-u':'10', 'wii':'11', 'ps-vita':'19', '3ds':'8', 'nintendo-ds':'77', 'psp':'17',
-    // 6th gen
-    'playstation2':'15', 'xbox':'80', 'gamecube':'105', 'dreamcast':'74', 'game-boy-advance':'24',
-    // 5th gen
-    'playstation':'27', 'nintendo-64':'83', 'sega-saturn':'75', 'game-boy-color':'43', 'game-boy':'26',
-    // Classic
-    'snes':'79', 'genesis':'167', 'nes':'49', 'sega-master-system':'107',
-    'atari-2600':'28', 'commodore-amiga':'166', 'arcade':'31',
+    'pc':'4','playstation5':'187','xbox-series-x':'186','nintendo-switch':'7',
+    'android':'21','ios':'3','macos':'5','linux':'6',
+    'playstation4':'18','xbox-one':'1','ps3':'16','xbox360':'14',
+    'wii-u':'10','wii':'11','ps-vita':'19','3ds':'8','nintendo-ds':'77','psp':'17',
+    'playstation2':'15','xbox':'80','gamecube':'105','dreamcast':'74','game-boy-advance':'24',
+    'playstation':'27','nintendo-64':'83','sega-saturn':'75','game-boy-color':'43','game-boy':'26',
+    'snes':'79','genesis':'167','nes':'49','sega-master-system':'107',
+    'atari-2600':'28','commodore-amiga':'166','arcade':'31',
   };
   return map[slug] || slug;
 }
 
-// =============================================
-// SEARCH — PAGINATION STATE
-// =============================================
-let srPage = 1;
-let srHasMore = false;
-let srLastReleased = [];
-let srLastUpcoming = [];
-
-async function doSearch(append=false) {
-  const key = DB.rawgKey;
-  const resultsEl = document.getElementById('search-results');
-
-  if (!key) {
-    resultsEl.innerHTML = '<div class="error-state">No RAWG API key found. Please add your key in <strong>Settings</strong> first.</div>';
-    return;
-  }
-
-  const keyword = document.getElementById('sr-keyword').value.trim();
-  const hasFilters = keyword || document.getElementById('sr-platform').value || document.getElementById('sr-genre').value ||
-    document.getElementById('sr-mc-min').value || document.getElementById('sr-mc-max').value ||
-    document.getElementById('sr-year-from').value || document.getElementById('sr-year-to').value || activeTags.length;
-
-  if (!hasFilters) {
-    resultsEl.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><p>Enter a keyword or choose filters to search.</p></div>';
-    return;
-  }
-
-  if (!append) {
-    srPage = 1;
-    srLastReleased = [];
-    srLastUpcoming = [];
-    resultsEl.innerHTML = '<div class="search-loading"><div class="spinner"></div><div class="loading-text">Searching games…</div></div>';
-  } else {
-    srPage++;
-    const loadBtn = document.getElementById('btn-load-more-wrap');
-    if (loadBtn) loadBtn.innerHTML = '<div class="search-loading" style="padding:16px"><div class="spinner"></div></div>';
-  }
-
-  try {
-    const params = buildRAWGParams(srPage);
-    const url = RAWG_BASE + '/games?' + params;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('RAWG returned ' + res.status);
-    const data = await res.json();
-
-    srHasMore = !!data.next;
-    const newReleased = (data.results || []).filter(r => !r.released || new Date(r.released) <= new Date());
-
-    // Upcoming fetch (first page only)
-    let newUpcoming = [];
-    if (!append) {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        const upParams = new URLSearchParams();
-        upParams.set('key', key);
-        upParams.set('page_size', '5');
-        upParams.set('dates', today + ',2030-12-31');
-        upParams.set('ordering', '-added');
-        if (keyword) upParams.set('search', keyword);
-        if (document.getElementById('sr-platform').value) upParams.set('platforms', rawgPlatformId(document.getElementById('sr-platform').value));
-        if (document.getElementById('sr-genre').value)    upParams.set('genres', document.getElementById('sr-genre').value);
-        const upRes = await fetch(RAWG_BASE + '/games?' + upParams.toString());
-        if (upRes.ok) { const upData = await upRes.json(); newUpcoming = (upData.results || []).filter(g => new Date(g.released) > new Date()); }
-      } catch(e) {}
-    }
-
-    if (append) {
-      srLastReleased = [...srLastReleased, ...newReleased];
-    } else {
-      srLastReleased = newReleased;
-      srLastUpcoming = newUpcoming;
-    }
-
-    renderSearchResults(srLastReleased, srLastUpcoming, data.count || 0, srHasMore);
-  } catch(err) {
-    if (!append) resultsEl.innerHTML = '<div class="error-state">Search failed: ' + err.message + '<br><br>Check your API key in Settings.</div>';
-    else showToast('Failed to load more results');
-  }
-}
-
-function buildRAWGParams(page=1) {
+function buildRAWGParams(page) {
   const key      = DB.rawgKey;
   const keyword  = document.getElementById('sr-keyword').value.trim();
   const platform = document.getElementById('sr-platform').value;
@@ -983,79 +910,128 @@ function buildRAWGParams(page=1) {
   const mcMax    = document.getElementById('sr-mc-max').value;
   const yearFrom = document.getElementById('sr-year-from').value;
   const yearTo   = document.getElementById('sr-year-to').value;
-
-  const params = new URLSearchParams();
+  const params   = new URLSearchParams();
   params.set('key', key);
   params.set('page_size', '20');
-  params.set('page', String(page));
+  params.set('page', String(page||1));
   params.set('ordering', keyword ? '-relevance' : '-metacritic');
   if (keyword)  params.set('search', keyword);
   if (platform) params.set('platforms', rawgPlatformId(platform));
   if (genre)    params.set('genres', genre);
-  if (mcMin)    params.set('metacritic', mcMin + ',' + (mcMax || '100'));
-  else if (mcMax) params.set('metacritic', '0,' + mcMax);
-  if (yearFrom || yearTo) {
-    params.set('dates', (yearFrom ? yearFrom+'-01-01' : '1970-01-01') + ',' + (yearTo ? yearTo+'-12-31' : '2030-12-31'));
-  }
+  if (mcMin)    params.set('metacritic', mcMin+','+(mcMax||'100'));
+  else if (mcMax) params.set('metacritic', '0,'+mcMax);
+  if (yearFrom||yearTo) params.set('dates', (yearFrom?yearFrom+'-01-01':'1970-01-01')+','+(yearTo?yearTo+'-12-31':'2030-12-31'));
   if (activeTags.length) params.set('tags', activeTags.map(t=>t.toLowerCase().replace(/ /g,'-')).join(','));
   return params.toString();
 }
 
-function renderSearchResults(released, upcoming, total, hasMore) {
+async function doSearch(append) {
+  const key = DB.rawgKey;
+  const resultsEl = document.getElementById('search-results');
+  if (!key) { resultsEl.innerHTML = '<div class="error-state">No RAWG API key found. Add your key in <strong>Settings</strong> first.<br><br>Free key at rawg.io/apidocs</div>'; return; }
+  const keyword = document.getElementById('sr-keyword').value.trim();
+  const hasFilters = keyword||document.getElementById('sr-platform').value||document.getElementById('sr-genre').value
+    ||document.getElementById('sr-mc-min').value||document.getElementById('sr-mc-max').value
+    ||document.getElementById('sr-year-from').value||document.getElementById('sr-year-to').value||activeTags.length;
+  if (!hasFilters) { resultsEl.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><p>Enter a keyword or choose filters to search.</p></div>'; return; }
+
+  if (!append) {
+    srPage = 1; srLastReleased = []; srLastUpcoming = [];
+    resultsEl.innerHTML = '<div class="search-loading"><div class="spinner"></div><div class="loading-text">Searching\u2026</div></div>';
+  } else {
+    srPage++;
+    const wrap = document.getElementById('load-more-wrap');
+    if (wrap) wrap.innerHTML = '<div class="search-loading" style="padding:16px"><div class="spinner"></div></div>';
+  }
+
+  try {
+    const res  = await fetch(RAWG_BASE+'/games?'+buildRAWGParams(srPage));
+    if (!res.ok) throw new Error('RAWG error '+res.status);
+    const data = await res.json();
+    srHasMore  = !!data.next;
+    const newReleased = (data.results||[]).filter(r => r.released && new Date(r.released) <= new Date());
+
+    if (!append) {
+      srLastReleased = newReleased;
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const up = new URLSearchParams();
+        up.set('key',key); up.set('page_size','5'); up.set('dates',today+',2030-12-31'); up.set('ordering','-added');
+        if (keyword) up.set('search',keyword);
+        if (document.getElementById('sr-platform').value) up.set('platforms',rawgPlatformId(document.getElementById('sr-platform').value));
+        if (document.getElementById('sr-genre').value) up.set('genres',document.getElementById('sr-genre').value);
+        const upRes = await fetch(RAWG_BASE+'/games?'+up.toString());
+        if (upRes.ok) { const upData = await upRes.json(); srLastUpcoming = (upData.results||[]).filter(g=>new Date(g.released)>new Date()); }
+      } catch(e) { srLastUpcoming = []; }
+    } else {
+      srLastReleased = [...srLastReleased, ...newReleased];
+    }
+    renderSearchResults(srLastReleased, srLastUpcoming, srHasMore);
+  } catch(err) {
+    if (!append) resultsEl.innerHTML = '<div class="error-state">Search failed: '+err.message+'<br><br>Check your API key in Settings.</div>';
+    else showToast('Failed to load more');
+  }
+}
+
+function rawgToGame(r) {
+  return {
+    id: uid(), rawgId: r.id, title: r.name,
+    platform:    (r.platforms||[]).map(p=>p.platform.name).join(', '),
+    genre:       (r.genres||[]).map(g=>g.name).join(', '),
+    releaseDate: r.released||null, metacritic: r.metacritic||null,
+    art:         r.background_image||null,
+    upcoming:    r.released ? new Date(r.released)>new Date() : true,
+    addedAt:     Date.now(),
+  };
+}
+
+function renderSearchResults(released, upcoming, hasMore) {
   const resultsEl = document.getElementById('search-results');
   const bl = DB.backlog, wl = DB.wishlist;
-  const relIds = new Set(released.map(r=>r.id));
-  const filteredUpcoming = upcoming.filter(u=>!relIds.has(u.id));
-
-  let html = '<div class="results-meta">'+released.length+' released &middot; '+filteredUpcoming.length+' upcoming</div>';
-
-  if (filteredUpcoming.length) {
-    html += '<div class="section-header gold">'+ICONS.clock+' Upcoming ('+filteredUpcoming.length+')</div>';
-    filteredUpcoming.forEach(r => { html += buildSearchCard(rawgToGame(r), bl, wl, true); });
+  const relIds = new Set(released.map(r=>r.id||r.rawgId));
+  const filtUp = upcoming.filter(u=>!relIds.has(u.id));
+  let html = '<div class="results-meta">'+released.length+' released &middot; '+filtUp.length+' upcoming</div>';
+  if (filtUp.length) {
+    html += '<div class="section-header gold">'+ICONS.clock+' Upcoming ('+filtUp.length+')</div>';
+    filtUp.forEach(r => { html += buildSearchCard(rawgToGame(r), bl, wl, true); });
     if (released.length) html += '<div class="section-divider"></div>';
   }
   if (released.length) {
     html += '<div class="section-header green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Released ('+released.length+')</div>';
     released.forEach(r => { html += buildSearchCard(rawgToGame(r), bl, wl, false); });
   }
-  if (!released.length && !filteredUpcoming.length) {
-    html += '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><p>No games found.<br>Try different search terms or filters.</p></div>';
-  }
-  if (hasMore) {
-    html += '<div class="load-more-wrap" id="btn-load-more-wrap"><button class="btn-load-more" onclick="doSearch(true)">Load more results</button></div>';
-  }
-
+  if (!released.length && !filtUp.length) html += '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><p>No games found.</p></div>';
+  if (hasMore) html += '<div class="load-more-wrap" id="load-more-wrap"><button class="btn-load-more" onclick="doSearch(true)">Load more results</button></div>';
   resultsEl.innerHTML = html;
 }
 
 function buildSearchCard(g, bl, wl, forceUpcoming) {
-  const up = forceUpcoming || isUpcoming(g);
-  const inBL = bl.some(x => x.title === g.title || x.rawgId === g.rawgId);
-  const inWL = wl.some(x => x.title === g.title || x.rawgId === g.rawgId);
-  const mc = g.metacritic;
-  const mcH = mc ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>'
-                 : (up ? '<span class="upcoming-badge">'+ICONS.clock+'Upcoming</span>' : '<span class="metacritic-badge none">-</span>');
-
+  const up   = forceUpcoming || isUpcoming(g);
+  const inBL = bl.some(x=>x.title===g.title||x.rawgId===g.rawgId);
+  const inWL = wl.some(x=>x.title===g.title||x.rawgId===g.rawgId);
+  const mc   = g.metacritic;
+  const mcH  = mc ? '<span class="metacritic-badge '+mcClass(mc)+'">'+mc+'</span>'
+                  : (up ? '<span class="upcoming-badge">'+ICONS.clock+'Upcoming</span>' : '<span class="metacritic-badge none">-</span>');
   const extra = up ? '' : (inBL ? 'in-backlog' : inWL ? 'in-wishlist' : '');
-  const gJson = JSON.stringify(g).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
-
+  const enc   = encodeURIComponent(JSON.stringify(g));
   const blBtn = up ? '' : (inBL
     ? '<button class="btn btn-added" disabled>'+ICONS.check+' In Backlog</button>'
-    : '<button class="btn btn-add-backlog" onclick="addSearchToBacklog(\''+g.rawgId+'\',\''+encodeURIComponent(JSON.stringify(g))+'\')">'+ICONS.grid+' +&nbsp;Backlog</button>');
+    : '<button class="btn btn-add-backlog" onclick="addSearchToBacklog(\''+g.rawgId+'\',\''+enc+'\')">'+ICONS.grid+' +&nbsp;Backlog</button>');
   const wlBtn = inWL
     ? '<button class="btn btn-added" disabled>'+ICONS.check+' In Wishlist</button>'
-    : '<button class="btn btn-add-wishlist" onclick="addSearchToWishlist(\''+g.rawgId+'\',\''+encodeURIComponent(JSON.stringify(g))+'\')"><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' style=\'width:10px;height:10px\'><path d=\'M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z\'/></svg> +&nbsp;Wishlist</button>';
-
-  return '<div class="sr-card '+extra+'" data-rawg="'+g.rawgId+'">' +
-    '<div class="card-art">'+artImg(g.art, g.title)+'</div>' +
-    '<div class="card-body">' +
-      '<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>' +
-      '<div class="card-meta-block">' +
-        '<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>' +
-        '<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'TBA')+'</span></div>' +
-      '</div>' +
-      '<div class="card-actions"><div class="card-actions-left">'+blBtn+wlBtn+'</div><button class="btn btn-more" onclick="openSheet(\'' + g.rawgId + '\',\'' + encodeURIComponent(JSON.stringify(g)) + '\')">' + ICONS.external + ' More</button></div>' +
-    '</div></div>';
+    : '<button class="btn btn-add-wishlist" onclick="addSearchToWishlist(\''+g.rawgId+'\',\''+enc+'\')">'+ICONS.bookmark+' +&nbsp;Wishlist</button>';
+  return '<div class="sr-card '+extra+'" data-rawg="'+(g.rawgId||'')+'">'
+    +'<div class="card-art">'+artImg(g.art,g.title)+'</div>'
+    +'<div class="card-body">'
+      +'<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>'
+      +'<div class="card-meta-block">'
+        +'<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>'
+        +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'TBA')+'</span></div>'
+      +'</div>'
+      +'<div class="card-actions"><div class="card-actions-left">'+blBtn+wlBtn+'</div>'
+      +'<button class="btn btn-more" onclick="openSheet(\''+(g.rawgId||g.id)+'\',\''+enc+'\')">'+ICONS.external+' More</button>'
+      +'</div>'
+    +'</div></div>';
 }
 
 function addSearchToBacklog(rawgId, encoded) {
@@ -1065,14 +1041,10 @@ function addSearchToBacklog(rawgId, encoded) {
   bl.push({...g, status:'new', addedAt:Date.now()});
   DB.backlog = bl;
   showToast('\u2713 Added to backlog!');
-  // Refresh cards inline
   document.querySelectorAll('.sr-card[data-rawg="'+rawgId+'"]').forEach(el => {
     el.classList.add('in-backlog');
-    const left = el.querySelector('.card-actions-left');
-    if (left) {
-      const blBtn = left.querySelector('.btn-add-backlog');
-      if (blBtn) blBtn.outerHTML = '<button class="btn btn-added" disabled>'+ICONS.check+' In Backlog</button>';
-    }
+    const btn = el.querySelector('.btn-add-backlog');
+    if (btn) btn.outerHTML = '<button class="btn btn-added" disabled>'+ICONS.check+' In Backlog</button>';
   });
   updateStats();
 }
@@ -1086,79 +1058,22 @@ function addSearchToWishlist(rawgId, encoded) {
   showToast('\u2713 Added to wishlist!');
   document.querySelectorAll('.sr-card[data-rawg="'+rawgId+'"]').forEach(el => {
     if (!el.classList.contains('in-backlog')) el.classList.add('in-wishlist');
-    const left = el.querySelector('.card-actions-left');
-    if (left) {
-      const wlBtn = left.querySelector('.btn-add-wishlist');
-      if (wlBtn) wlBtn.outerHTML = '<button class="btn btn-added" disabled>'+ICONS.check+' In Wishlist</button>';
-    }
+    const btn = el.querySelector('.btn-add-wishlist');
+    if (btn) btn.outerHTML = '<button class="btn btn-added" disabled>'+ICONS.check+' In Wishlist</button>';
   });
   updateStats();
 }
 
 function clearSearch() {
-  document.getElementById('sr-keyword').value = '';
+  ['sr-keyword','sr-mc-min','sr-mc-max','sr-year-from','sr-year-to'].forEach(id => { document.getElementById(id).value=''; });
   document.getElementById('sr-platform').value = '';
   document.getElementById('sr-genre').value = '';
-  document.getElementById('sr-mc-min').value = '';
-  document.getElementById('sr-mc-max').value = '';
-  document.getElementById('sr-year-from').value = '';
-  document.getElementById('sr-year-to').value = '';
   activeTags = [];
   renderTags();
-  // Close tags panel on clear
   document.getElementById('tags-panel').classList.remove('open');
   document.getElementById('tags-chevron').classList.remove('open');
   document.getElementById('search-results').innerHTML = '';
 }
-
-// =============================================
-// SETTINGS
-// =============================================
-function renderSettings() {
-  document.getElementById('key-rawg').value = DB.rawgKey ? '•'.repeat(20) : '';
-  document.getElementById('rawg-status').innerHTML = DB.rawgKey
-    ? '<span class="key-status saved">'+ICONS.check+' Key saved</span>'
-    : '<span class="key-status missing">No key set</span>';
-}
-
-document.getElementById('btn-save-keys').addEventListener('click', () => {
-  const rawg   = document.getElementById('key-rawg').value.trim();
-  const igdbId = document.getElementById('key-igdb-id').value.trim();
-  const igdbSc = document.getElementById('key-igdb-secret').value.trim();
-  // Only update if not masked placeholder
-  if (rawg   && !rawg.startsWith('\u2022'))   DB.rawgKey      = rawg;
-  if (igdbId && !igdbId.startsWith('\u2022')) DB.igdbClientId = igdbId;
-  if (igdbSc && !igdbSc.startsWith('\u2022')) DB.igdbSecret   = igdbSc;
-  renderSettings();
-  showToast('\u2713 Keys saved');
-});
-
-document.getElementById('btn-clear-cache').addEventListener('click', () => {
-  DB.imgCache = {};
-  showToast('Image cache cleared');
-});
-
-document.getElementById('btn-clear-all').addEventListener('click', () => {
-  if (!confirm('This will permanently delete your backlog and wishlist. Are you sure?')) return;
-  DB.backlog = []; DB.wishlist = [];
-  showToast('All data reset');
-  renderBacklog(); renderWishlist(); updateStats();
-});
-
-// Unmask key inputs on focus
-['key-rawg'].forEach(id => {
-  document.getElementById(id).addEventListener('focus', function() {
-    if (this.value.startsWith('\u2022')) this.value = '';
-    this.type = 'text';
-  });
-  document.getElementById(id).addEventListener('blur', function() {
-    if (this.value && !this.value.startsWith('\u2022')) {
-      // keep as text so user can see what they typed until save
-    } else if (!this.value) {
-      this.type = 'password';
-    }
-  });
-});
 
 // =============================================
 // GAME DETAIL SHEET
@@ -1167,43 +1082,40 @@ let sheetTouchStartY = 0;
 
 function openSheet(rawgId, encoded) {
   const g = JSON.parse(decodeURIComponent(encoded));
-  const sheet    = document.getElementById('game-sheet');
-  const backdrop = document.getElementById('sheet-backdrop');
   document.getElementById('sheet-title').textContent = g.title;
   const artEl = document.getElementById('sheet-art-img');
-  artEl.src = g.art || ''; artEl.alt = g.title;
+  artEl.src = g.art||''; artEl.alt = g.title;
   const mc = g.metacritic;
   let badges = '';
-  if (mc) { const cls = mc>=80?'mc-good':mc>=60?'mc-mid':'mc-low'; badges += '<span class="sheet-badge '+cls+'">MC '+mc+'</span>'; }
+  if (mc) { badges += '<span class="sheet-badge '+(mc>=80?'mc-good':mc>=60?'mc-mid':'mc-low')+'">MC '+mc+'</span>'; }
   if (g.releaseDate) badges += '<span class="sheet-badge info">'+g.releaseDate+'</span>';
-  if (g.genre) g.genre.split(',').slice(0,2).forEach(gen => { badges += '<span class="sheet-badge info">'+gen.trim()+'</span>'; });
+  if (g.genre) g.genre.split(',').slice(0,2).forEach(gen=>{ badges+='<span class="sheet-badge info">'+gen.trim()+'</span>'; });
   document.getElementById('sheet-badges').innerHTML = badges;
-  document.getElementById('sheet-body').innerHTML = '<div class="sheet-loading"><div class="spinner"></div> Loading details…</div>';
+  document.getElementById('sheet-body').innerHTML = '<div class="sheet-loading"><div class="spinner"></div> Loading\u2026</div>';
   renderSheetActions(rawgId, encoded);
-  sheet.classList.add('open');
-  backdrop.classList.add('open');
+  document.getElementById('game-sheet').classList.add('open');
+  document.getElementById('sheet-backdrop').classList.add('open');
   document.body.style.overflow = 'hidden';
-  sheet.addEventListener('touchstart', sheetTouchStart, {passive:true});
-  sheet.addEventListener('touchend',   sheetTouchEnd,   {passive:true});
+  document.getElementById('game-sheet').addEventListener('touchstart', sheetTouchStart, {passive:true});
+  document.getElementById('game-sheet').addEventListener('touchend',   sheetTouchEnd,   {passive:true});
   fetchSheetDetails(g);
 }
 
 function renderSheetActions(rawgId, enc) {
-  const g = JSON.parse(decodeURIComponent(enc));
-  const bl = DB.backlog, wl = DB.wishlist;
+  const g    = JSON.parse(decodeURIComponent(enc));
+  const bl   = DB.backlog, wl = DB.wishlist;
   const inBL = bl.some(x=>x.title===g.title||x.rawgId===g.rawgId);
   const inWL = wl.some(x=>x.title===g.title||x.rawgId===g.rawgId);
-  const up = isUpcoming(g);
-  const safeEnc = enc;
+  const up   = isUpcoming(g);
   let a = '';
   if (!up) {
     a += inBL
-      ? '<button class="btn btn-added" disabled style="flex:1;justify-content:center">' + ICONS.check + ' In Backlog</button>'
-      : '<button class="btn btn-add-backlog" style="flex:1;justify-content:center" onclick="addSearchToBacklog(\'' + rawgId + '\',\'' + safeEnc + '\');renderSheetActions(\'' + rawgId + '\',\'' + safeEnc + '\')">' + ICONS.grid + ' + Backlog</button>';
+      ? '<button class="btn btn-added" disabled style="flex:1;justify-content:center">'+ICONS.check+' In Backlog</button>'
+      : '<button class="btn btn-add-backlog" style="flex:1;justify-content:center" onclick="addSearchToBacklog(\''+rawgId+'\',\''+enc+'\');renderSheetActions(\''+rawgId+'\',\''+enc+'\')">'+ICONS.grid+' + Backlog</button>';
   }
   a += inWL
-    ? '<button class="btn btn-added" disabled style="flex:1;justify-content:center">' + ICONS.check + ' In Wishlist</button>'
-    : '<button class="btn btn-add-wishlist" style="flex:1;justify-content:center" onclick="addSearchToWishlist(\'' + rawgId + '\',\'' + safeEnc + '\');renderSheetActions(\'' + rawgId + '\',\'' + safeEnc + '\')"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' style='width:11px;height:11px'><path d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'/></svg> + Wishlist</button>';
+    ? '<button class="btn btn-added" disabled style="flex:1;justify-content:center">'+ICONS.check+' In Wishlist</button>'
+    : '<button class="btn btn-add-wishlist" style="flex:1;justify-content:center" onclick="addSearchToWishlist(\''+rawgId+'\',\''+enc+'\');renderSheetActions(\''+rawgId+'\',\''+enc+'\')">'+ICONS.bookmark+' + Wishlist</button>';
   document.getElementById('sheet-actions').innerHTML = a;
 }
 
@@ -1217,45 +1129,43 @@ async function fetchSheetDetails(g) {
     ]);
     const detail = detailRes.ok ? await detailRes.json() : null;
     const ssData = ssRes.ok ? await ssRes.json() : null;
-    body.innerHTML = buildSheetBody(g, detail, ssData ? (ssData.results||[]) : []);
-  } catch(e) {
-    body.innerHTML = buildSheetBody(g, null, []);
-  }
+    body.innerHTML = buildSheetBody(g, detail, ssData?(ssData.results||[]):[]);
+  } catch(e) { body.innerHTML = buildSheetBody(g, null, []); }
 }
 
 function buildSheetBody(g, detail, screenshots) {
   let html = '';
-  const desc = detail ? (detail.description_raw||detail.description||'').replace(/<[^>]+>/g,'').trim() : '';
+  const rawDesc = detail ? (detail.description_raw||detail.description||'') : '';
+  const desc    = rawDesc.replace(/<[^>]+>/g,'').trim();
   if (desc) {
-    const short = desc.length>320 ? desc.substring(0,320)+'...' : desc;
-    html += '<div class="sheet-section"><div class="sheet-section-title">About</div><div class="sheet-desc">'+short+'</div></div>';
+    html += '<div class="sheet-section"><div class="sheet-section-title">About</div>'
+           +'<div class="sheet-desc">'+(desc.length>320?desc.substring(0,320)+'...':desc)+'</div></div>';
   }
   if (screenshots.length) {
     html += '<div class="sheet-section"><div class="sheet-section-title">Screenshots</div><div class="sheet-screenshots">';
-    screenshots.forEach(s => { html += '<div class="sheet-screenshot"><img src="'+s.image+'" loading="lazy" /></div>'; });
+    screenshots.forEach(s=>{ html+='<div class="sheet-screenshot"><img src="'+s.image+'" loading="lazy"/></div>'; });
     html += '</div></div>';
   }
   const items = [];
-  if (detail && detail.playtime)    items.push(['Avg. Playtime', detail.playtime+' hrs']);
-  if (g.metacritic||detail&&detail.metacritic) items.push(['Metacritic', (g.metacritic||(detail&&detail.metacritic))+' / 100']);
-  if (detail && detail.esrb_rating) items.push(['Age Rating', detail.esrb_rating.name]);
-  if (g.releaseDate)                items.push(['Released', g.releaseDate]);
+  const pt = detail&&detail.playtime;
+  const mc = g.metacritic||(detail&&detail.metacritic);
+  if (pt) items.push(['Avg. Playtime', pt+' hrs']);
+  if (mc) items.push(['Metacritic', mc+' / 100']);
+  if (detail&&detail.esrb_rating) items.push(['Age Rating', detail.esrb_rating.name]);
+  if (g.releaseDate) items.push(['Released', g.releaseDate]);
   const devs = detail ? (detail.developers||[]).map(d=>d.name).join(', ') : '';
   const pubs = detail ? (detail.publishers||[]).map(p=>p.name).join(', ') : '';
   if (devs) items.push(['Developer', devs]);
   if (pubs) items.push(['Publisher', pubs]);
   if (items.length) {
     html += '<div class="sheet-section"><div class="sheet-section-title">Details</div><div class="sheet-meta-grid">';
-    items.forEach(([l,v]) => { html += '<div class="sheet-meta-item"><div class="sheet-meta-label">'+l+'</div><div class="sheet-meta-value">'+v+'</div></div>'; });
+    items.forEach(([l,v])=>{ html+='<div class="sheet-meta-item"><div class="sheet-meta-label">'+l+'</div><div class="sheet-meta-value">'+v+'</div></div>'; });
     html += '</div></div>';
   }
   const stores = detail ? (detail.stores||[]) : [];
   if (stores.length) {
     html += '<div class="sheet-section"><div class="sheet-section-title">Where to Buy</div><div class="sheet-stores">';
-    stores.forEach(s => {
-      const url = s.url || ('https://'+s.store.domain);
-      html += '<a class="sheet-store-btn" href="'+url+'" target="_blank" rel="noopener">'+ICONS.external+' '+s.store.name+'</a>';
-    });
+    stores.forEach(s=>{ html+='<a class="sheet-store-btn" href="'+(s.url||'https://'+s.store.domain)+'" target="_blank" rel="noopener">'+ICONS.external+' '+s.store.name+'</a>'; });
     html += '</div></div>';
   }
   if (!html) html = '<div class="sheet-desc" style="color:var(--text-muted);padding:8px 0">No additional details available.</div>';
@@ -1271,13 +1181,7 @@ function closeSheet() {
 }
 
 function sheetTouchStart(e) { sheetTouchStartY = e.touches[0].clientY; }
-function sheetTouchEnd(e) { if (e.changedTouches[0].clientY - sheetTouchStartY > 80) closeSheet(); }
-
-function openSheetFromGame(g) {
-  const enc = encodeURIComponent(JSON.stringify(g));
-  const id = g.rawgId || ('bl_' + g.id);
-  openSheet(id, enc);
-}
+function sheetTouchEnd(e)   { if (e.changedTouches[0].clientY - sheetTouchStartY > 80) closeSheet(); }
 
 // =============================================
 // PULL TO REFRESH
@@ -1289,60 +1193,31 @@ function initPullToRefresh(panelId, refreshFn) {
   indicator.className = 'ptr-indicator';
   indicator.innerHTML = '<div class="ptr-spinner"></div><span>Release to refresh</span>';
   panel.insertBefore(indicator, panel.firstChild);
-  panel.addEventListener('touchstart', e => { if (panel.scrollTop === 0) { startY = e.touches[0].clientY; pulling = true; } }, {passive:true});
-  panel.addEventListener('touchmove',  e => { if (pulling && e.touches[0].clientY - startY > 60) indicator.classList.add('visible'); }, {passive:true});
-  panel.addEventListener('touchend',   e => {
-    if (!pulling) return; pulling = false;
-    const dist = e.changedTouches[0].clientY - startY;
-    if (dist > 60) { refreshFn(); setTimeout(() => indicator.classList.remove('visible'), 800); }
+  panel.addEventListener('touchstart', e=>{ if (panel.scrollTop===0){startY=e.touches[0].clientY;pulling=true;} },{passive:true});
+  panel.addEventListener('touchmove',  e=>{ if (pulling&&e.touches[0].clientY-startY>60) indicator.classList.add('visible'); },{passive:true});
+  panel.addEventListener('touchend',   e=>{
+    if (!pulling) return; pulling=false;
+    const dist=e.changedTouches[0].clientY-startY;
+    if (dist>60){refreshFn();setTimeout(()=>indicator.classList.remove('visible'),800);}
     else indicator.classList.remove('visible');
-  }, {passive:true});
+  },{passive:true});
 }
 
 // =============================================
-// TAB NAVIGATION
+// SETTINGS
 // =============================================
-function switchTab(tab) {
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('panel-'+tab).classList.add('active');
-  document.querySelector('.nav-item[data-tab="'+tab+'"]').classList.add('active');
-  if (tab==='backlog')  renderBacklog();
-  if (tab==='wishlist') renderWishlist();
-  if (tab==='settings') renderSettings();
+function renderSettings() {
+  document.getElementById('key-rawg').value = DB.rawgKey ? '\u2022'.repeat(20) : '';
+  document.getElementById('rawg-status').innerHTML = DB.rawgKey
+    ? '<span class="key-status saved">'+ICONS.check+' Key saved</span>'
+    : '<span class="key-status missing">No key set</span>';
 }
-
-document.querySelectorAll('.nav-item').forEach(btn => {
-  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-});
-
-// Search listeners
-document.getElementById('btn-do-search').addEventListener('click', doSearch);
-document.getElementById('btn-clear-search').addEventListener('click', clearSearch);
-document.getElementById('sr-keyword').addEventListener('keydown', e => { if (e.key==='Enter') doSearch(); });
-document.getElementById('backlog-search').addEventListener('input', renderBacklog);
-document.getElementById('backlog-status-filter').addEventListener('change', renderBacklog);
-document.getElementById('backlog-sort').addEventListener('change', renderBacklog);
-document.getElementById('wl-search').addEventListener('input', renderWishlist);
-document.getElementById('wl-genre-filter').addEventListener('change', renderWishlist);
-document.getElementById('wl-platform-filter').addEventListener('change', renderWishlist);
-document.getElementById('wl-sort').addEventListener('change', renderWishlist);
-
-// =============================================
-// INIT
-// =============================================
-seedData();
-restoreUIState();
-renderTags();
-renderBacklog();
-initPullToRefresh('panel-backlog', renderBacklog);
-initPullToRefresh('panel-wishlist', renderWishlist);
 
 document.getElementById('btn-save-keys').addEventListener('click', () => {
   const rawg = document.getElementById('key-rawg').value.trim();
-  if (rawg && !rawg.startsWith('•')) DB.rawgKey = rawg;
+  if (rawg && !rawg.startsWith('\u2022')) DB.rawgKey = rawg;
   renderSettings();
-  showToast('✓ Key saved');
+  showToast('\u2713 Key saved');
 });
 
 document.getElementById('btn-clear-cache').addEventListener('click', () => {
@@ -1357,19 +1232,57 @@ document.getElementById('btn-clear-all').addEventListener('click', () => {
   renderBacklog(); renderWishlist(); updateStats();
 });
 
-['key-rawg'].forEach(id => {
-  document.getElementById(id).addEventListener('focus', function() {
-    if (this.value.startsWith('•')) this.value = '';
-    this.type = 'text';
-  });
-  document.getElementById(id).addEventListener('blur', function() {
-    this.type = 'password';
-  });
+document.getElementById('key-rawg').addEventListener('focus', function() {
+  if (this.value.startsWith('\u2022')) this.value = '';
+  this.type = 'text';
 });
+document.getElementById('key-rawg').addEventListener('blur', function() {
+  this.type = 'password';
+});
+
+// =============================================
+// TAB NAVIGATION
+// =============================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.querySelector('.nav-item[data-tab="'+tab+'"]').classList.add('active');
+  if (tab==='backlog')  renderBacklog();
+  if (tab==='wishlist') renderWishlist();
+  if (tab==='settings') renderSettings();
+}
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+// Filter listeners
+document.getElementById('backlog-search').addEventListener('input', renderBacklog);
+document.getElementById('backlog-status-filter').addEventListener('change', renderBacklog);
+document.getElementById('backlog-sort').addEventListener('change', renderBacklog);
+document.getElementById('wl-search').addEventListener('input', renderWishlist);
+document.getElementById('wl-genre-filter').addEventListener('change', renderWishlist);
+document.getElementById('wl-platform-filter').addEventListener('change', renderWishlist);
+document.getElementById('wl-sort').addEventListener('change', renderWishlist);
+document.getElementById('btn-do-search').addEventListener('click', () => doSearch(false));
+document.getElementById('btn-clear-search').addEventListener('click', clearSearch);
+document.getElementById('sr-keyword').addEventListener('keydown', e => { if (e.key==='Enter') doSearch(false); });
+
+// =============================================
+// INIT
+// =============================================
+seedData();
+restoreUIState();
+renderTags();
+renderBacklog();
+initPullToRefresh('panel-backlog',  renderBacklog);
+initPullToRefresh('panel-wishlist', renderWishlist);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }
+
 </script>
 </body>
 </html>

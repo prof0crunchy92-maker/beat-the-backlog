@@ -1,44 +1,40 @@
-// Bump this version string every time you update the app files.
-// The browser detects the change, installs the new worker, and clears old caches.
-const CACHE_VERSION = 'btb-v6';
-const ASSETS = ['/index.html'];
+const CACHE_VERSION = 'btb-v7';
+const ASSETS = [
+  '/beat-the-backlog/index.html',
+  '/beat-the-backlog/manifest.json'
+];
 
-// On install: cache fresh assets
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_VERSION)
       .then(cache => cache.addAll(ASSETS))
-      .then(() => self.skipWaiting()) // activate immediately, don't wait
+      .then(() => self.skipWaiting())
   );
 });
 
-// On activate: delete every old cache version
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
         keys.filter(k => k !== CACHE_VERSION).map(k => caches.delete(k))
       )
-    ).then(() => self.clients.claim()) // take control of all open tabs
+    ).then(() => self.clients.claim())
   );
 });
 
-// On fetch: network-first for HTML (always get latest UI),
-// cache-first for everything else (fonts, images)
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
-  // Always fetch index.html fresh from network, fall back to cache if offline
-  if (url.pathname.endsWith('index.html') || url.pathname === '/') {
+  // Network-first for HTML — always get the latest UI
+  if (url.pathname.endsWith('index.html') || url.pathname.endsWith('/beat-the-backlog/')) {
     e.respondWith(
       fetch(e.request)
         .then(res => {
-          // Update cache with the fresh version
           const clone = res.clone();
           caches.open(CACHE_VERSION).then(cache => cache.put(e.request, clone));
           return res;
         })
-        .catch(() => caches.match('index.html'))
+        .catch(() => caches.match('/beat-the-backlog/index.html'))
     );
     return;
   }

@@ -2,14 +2,15 @@
   "name": "Beat the Backlog",
   "short_name": "Backlog",
   "description": "Your personal games backlog manager",
-  "start_url": "/index.html",
+  "start_url": "/beat-the-backlog/index.html",
+  "scope": "/beat-the-backlog/",
   "display": "standalone",
   "background_color": "#0d0d0f",
   "theme_color": "#0d0d0f",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230d0d0f'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='72' fill='%233d8ef0' text-anchor='middle' dominant-baseline='middle'>B</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230d0d0f'/><text x='50%25' y='55%25' font-family='sans-serif' font-weight='bold' font-size='72' fill='%233d8ef0' text-anchor='middle' dominant-baseline='middle'>B</text></svg>",
       "sizes": "192x192",
       "type": "image/svg+xml"
     }

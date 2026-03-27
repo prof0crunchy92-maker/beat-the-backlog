@@ -255,7 +255,8 @@
     .sheet-meta-value{font-size:13px;color:var(--text-primary);font-weight:500;}
     .sheet-screenshots{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
     .sheet-screenshots::-webkit-scrollbar{display:none;}
-    .sheet-screenshot{flex-shrink:0;width:200px;height:112px;border-radius:8px;overflow:hidden;background:#0a0a0c;}
+    .sheet-screenshot{flex-shrink:0;width:200px;height:112px;border-radius:8px;overflow:hidden;background:#0a0a0c;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s;}
+    .sheet-screenshot:active{opacity:.8;}
     .sheet-screenshot img{width:100%;height:100%;object-fit:cover;}
     .sheet-stores{display:flex;flex-wrap:wrap;gap:6px;}
     .sheet-store-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--text-secondary);padding:6px 12px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;}
@@ -1156,7 +1157,7 @@ function buildSheetBody(g, detail, screenshots) {
   }
   if (screenshots.length) {
     html += '<div class="sheet-section"><div class="sheet-section-title">Screenshots</div><div class="sheet-screenshots">';
-    screenshots.forEach(s=>{ html+='<div class="sheet-screenshot" onclick="openLightbox(\"'+s.image+'\")"><img src="'+s.image+'" loading="lazy"/></div>'; });
+    screenshots.forEach((s,i)=>{ html+='<div class="sheet-screenshot" data-src="'+encodeURIComponent(s.image)+'" onclick="openLightbox(decodeURIComponent(this.dataset.src))"><img src="'+s.image+'" loading="lazy"/></div>'; });
     html += '</div></div>';
   }
   const items = [];
@@ -1212,7 +1213,7 @@ function sheetTouchEnd(e) {
   const dy = e.changedTouches[0].clientY - sheetTouchStartY;
   const sheet = document.getElementById('game-sheet');
   sheet.style.transition = '';
-  if (dy > 140) {
+  if (dy > 260) {
     closeSheet();
   } else {
     sheet.style.transform = '';

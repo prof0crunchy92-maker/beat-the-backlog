@@ -46,7 +46,7 @@
 
     /* TABS */
     #tab-content{flex:1;overflow:hidden;position:relative;}
-    .tab-panel{display:none;position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px 12px calc(var(--nav-height) + 12px);}
+    .tab-panel{display:none;position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px 12px calc(var(--nav-height) + 28px);}
     .tab-panel.active{display:block;}
     .tab-panel::-webkit-scrollbar{width:3px;}
     .tab-panel::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:2px;}
@@ -263,6 +263,12 @@
     .sheet-loading{display:flex;align-items:center;justify-content:center;padding:40px;gap:12px;color:var(--text-muted);font-size:13px;}
     .sheet-actions{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);flex-shrink:0;}
     .sheet-actions .btn{flex:1;justify-content:center;padding:10px;}
+
+    /* LIGHTBOX */
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+    .lightbox.open{opacity:1;pointer-events:all;}
+    .lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;}
+    .lightbox-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.12);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;-webkit-tap-highlight-color:transparent;}
 
     .hidden{display:none!important;}
   </style>
@@ -492,6 +498,11 @@
 
   <!-- BOTTOM SHEET -->
   <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeSheet()"></div>
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="" />
+    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+  </div>
   <div class="sheet" id="game-sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-header">
@@ -1079,6 +1090,7 @@ function clearSearch() {
 // GAME DETAIL SHEET
 // =============================================
 let sheetTouchStartY = 0;
+let sheetDragging = false;
 
 function openSheet(rawgId, encoded) {
   const g = JSON.parse(decodeURIComponent(encoded));
@@ -1097,6 +1109,7 @@ function openSheet(rawgId, encoded) {
   document.getElementById('sheet-backdrop').classList.add('open');
   document.body.style.overflow = 'hidden';
   document.getElementById('game-sheet').addEventListener('touchstart', sheetTouchStart, {passive:true});
+  document.getElementById('game-sheet').addEventListener('touchmove',  sheetTouchMove,  {passive:true});
   document.getElementById('game-sheet').addEventListener('touchend',   sheetTouchEnd,   {passive:true});
   fetchSheetDetails(g);
 }
@@ -1143,7 +1156,7 @@ function buildSheetBody(g, detail, screenshots) {
   }
   if (screenshots.length) {
     html += '<div class="sheet-section"><div class="sheet-section-title">Screenshots</div><div class="sheet-screenshots">';
-    screenshots.forEach(s=>{ html+='<div class="sheet-screenshot"><img src="'+s.image+'" loading="lazy"/></div>'; });
+    screenshots.forEach(s=>{ html+='<div class="sheet-screenshot" onclick="openLightbox(\"'+s.image+'\")"><img src="'+s.image+'" loading="lazy"/></div>'; });
     html += '</div></div>';
   }
   const items = [];
@@ -1176,12 +1189,35 @@ function closeSheet() {
   document.getElementById('game-sheet').classList.remove('open');
   document.getElementById('sheet-backdrop').classList.remove('open');
   document.body.style.overflow = '';
-  document.getElementById('game-sheet').removeEventListener('touchstart', sheetTouchStart);
-  document.getElementById('game-sheet').removeEventListener('touchend',   sheetTouchEnd);
+  const sh = document.getElementById('game-sheet');
+  sh.style.transform = '';
+  sh.removeEventListener('touchstart', sheetTouchStart);
+  sh.removeEventListener('touchmove',  sheetTouchMove);
+  sh.removeEventListener('touchend',   sheetTouchEnd);
 }
 
-function sheetTouchStart(e) { sheetTouchStartY = e.touches[0].clientY; }
-function sheetTouchEnd(e)   { if (e.changedTouches[0].clientY - sheetTouchStartY > 80) closeSheet(); }
+function sheetTouchStart(e) {
+  sheetTouchStartY = e.touches[0].clientY;
+  sheetDragging = true;
+  document.getElementById('game-sheet').style.transition = 'none';
+}
+function sheetTouchMove(e) {
+  if (!sheetDragging) return;
+  const dy = Math.max(0, e.touches[0].clientY - sheetTouchStartY);
+  document.getElementById('game-sheet').style.transform = 'translateY(' + dy + 'px)';
+}
+function sheetTouchEnd(e) {
+  if (!sheetDragging) return;
+  sheetDragging = false;
+  const dy = e.changedTouches[0].clientY - sheetTouchStartY;
+  const sheet = document.getElementById('game-sheet');
+  sheet.style.transition = '';
+  if (dy > 140) {
+    closeSheet();
+  } else {
+    sheet.style.transform = '';
+  }
+}
 
 // =============================================
 // PULL TO REFRESH
@@ -1204,8 +1240,23 @@ function initPullToRefresh(panelId, refreshFn) {
 }
 
 // =============================================
-// SETTINGS
+// LIGHTBOX
 // =============================================
+function openLightbox(src) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightbox-img').src = src;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+  document.body.style.overflow = '';
+}
+
+// =============================================
+// SETTINGS
+// ==============================================
 function renderSettings() {
   document.getElementById('key-rawg').value = DB.rawgKey ? '\u2022'.repeat(20) : '';
   document.getElementById('rawg-status').innerHTML = DB.rawgKey

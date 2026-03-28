@@ -263,6 +263,9 @@
     .sheet-store-btn svg{width:11px;height:11px;}
     .sheet-loading{display:flex;align-items:center;justify-content:center;padding:40px;gap:12px;color:var(--text-muted);font-size:13px;}
     .sheet-actions{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);flex-shrink:0;}
+    .btn-youtube{display:inline-flex;align-items:center;gap:6px;background:rgba(255,40,40,0.12);color:#ff6b6b;border:1px solid rgba(255,40,40,0.25);padding:6px 12px;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:11px;font-weight:600;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:all .15s;}
+    .btn-youtube:active{background:rgba(255,40,40,0.25);}
+    .btn-youtube svg{width:13px;height:13px;flex-shrink:0;}
     .sheet-actions .btn{flex:1;justify-content:center;padding:10px;}
 
     /* LIGHTBOX */
@@ -549,6 +552,10 @@
       <div class="sheet-title-block">
         <div class="sheet-title" id="sheet-title"></div>
         <div class="sheet-badges" id="sheet-badges"></div>
+        <a id="sheet-yt-btn" class="btn-youtube" href="#" target="_blank" rel="noopener" style="margin-top:8px;align-self:flex-start">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31 31 0 000 12a31 31 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31 31 0 0024 12a31 31 0 00-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          Watch on YouTube
+        </a>
       </div>
       <button class="sheet-close" onclick="closeSheet()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -1219,6 +1226,8 @@ function openSheet(key, g) {
   if (g.releaseDate) badges += '<span class="sheet-badge info">'+g.releaseDate+'</span>';
   if (g.genre) g.genre.split(',').slice(0,2).forEach(gen=>{ badges+='<span class="sheet-badge info">'+gen.trim()+'</span>'; });
   document.getElementById('sheet-badges').innerHTML = badges;
+  const ytBtn = document.getElementById('sheet-yt-btn');
+  if (ytBtn) ytBtn.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(g.title + ' gameplay');
   document.getElementById('sheet-body').innerHTML = '<div class="sheet-loading"><div class="spinner"></div> Loading\u2026</div>';
   renderSheetActions(key, g);
   document.getElementById('game-sheet').classList.add('open');

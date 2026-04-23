@@ -654,6 +654,13 @@ function showToast(msg) {
   t._timer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function debounce(fn, ms) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
 function mcClass(score) {
   if (!score) return 'none';
   return score >= 80 ? '' : score >= 60 ? 'mid' : 'low';
@@ -713,8 +720,9 @@ function restoreUIState() {
 // =============================================
 // STATS
 // =============================================
-function updateStats() {
-  const bl = DB.backlog, wl = DB.wishlist;
+function updateStats(bl, wl) {
+  if (!bl) bl = DB.backlog;
+  if (!wl) wl = DB.wishlist;
   document.getElementById('stat-playing').textContent = bl.filter(g => g.status === 'started').length;
   document.getElementById('stat-done').textContent    = bl.filter(g => g.status === 'completed').length;
   document.getElementById('stat-queued').textContent  = wl.length;
@@ -730,7 +738,8 @@ function renderBacklog() {
   const statusFilt = document.getElementById('backlog-status-filter').value;
   const sortBy     = document.getElementById('backlog-sort').value;
 
-  let games = DB.backlog;
+  const allBacklog = DB.backlog;
+  let games = allBacklog;
   if (searchVal)            games = games.filter(g => g.title.toLowerCase().includes(searchVal));
   if (statusFilt !== 'all') games = games.filter(g => g.status === statusFilt);
   games = [...games].sort((a,b) => {
@@ -766,7 +775,7 @@ function renderBacklog() {
   }
   if (!html) html = '<div class="empty-state">'+ICONS.grid+'<p>Your backlog is empty.<br>Search for games to add them.</p></div>';
   container.innerHTML = html;
-  updateStats();
+  updateStats(allBacklog, DB.wishlist);
 }
 
 function buildBacklogCard(g) {
@@ -776,10 +785,10 @@ function buildBacklogCard(g) {
   return '<div class="game-card status-'+g.status+'" data-id="'+g.id+'">'
     +'<div class="card-art">'+artImg(g.art,g.title)+'</div>'
     +'<div class="card-body">'
-      +'<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>'
+      +'<div class="card-top"><div class="card-title">'+esc(g.title)+'</div>'+mcH+'</div>'
       +'<div class="card-meta-block">'
-        +'<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>'
-        +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'-')+'</span></div>'
+        +'<div class="card-meta">'+ICONS.platform+'<span>'+esc(platShort(g.platform))+'</span></div>'
+        +'<div class="card-meta">'+ICONS.genre+'<span>'+esc(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+esc(g.releaseDate||'-')+'</span></div>'
         +'<div class="card-status-dot"><span class="dot '+g.status+'"></span><span class="status-label '+g.status+'">'+sl[g.status]+'</span></div>'
       +'</div>'
       +'<div class="card-actions"><div class="card-actions-left">'
@@ -830,7 +839,8 @@ function renderWishlist() {
   const platFilt  = document.getElementById('wl-platform-filter').value;
   const sortBy    = document.getElementById('wl-sort').value;
 
-  let games = DB.wishlist;
+  const allWishlist = DB.wishlist;
+  let games = allWishlist;
   if (searchVal)         games = games.filter(g => g.title.toLowerCase().includes(searchVal));
   if (genreFilt!=='all') games = games.filter(g => (g.genre||'').includes(genreFilt));
   if (platFilt!=='all')  games = games.filter(g => (g.platform||'').includes(platFilt));
@@ -859,7 +869,7 @@ function renderWishlist() {
   }
   if (!html) html = '<div class="empty-state">'+ICONS.bookmark+'<p>Your wishlist is empty.<br>Search for games to add them.</p></div>';
   document.getElementById('wishlist-list').innerHTML = html;
-  updateStats();
+  updateStats(DB.backlog, allWishlist);
 }
 
 function buildWishlistCard(g) {
@@ -875,10 +885,10 @@ function buildWishlistCard(g) {
   return '<div class="wl-card'+(up?' upcoming':'')+'" data-id="'+g.id+'">'
     +'<div class="card-art">'+artImg(g.art,g.title)+'</div>'
     +'<div class="card-body">'
-      +'<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>'
+      +'<div class="card-top"><div class="card-title">'+esc(g.title)+'</div>'+mcH+'</div>'
       +'<div class="card-meta-block">'
-        +'<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>'
-        +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'Upcoming')+'</span></div>'
+        +'<div class="card-meta">'+ICONS.platform+'<span>'+esc(platShort(g.platform))+'</span></div>'
+        +'<div class="card-meta">'+ICONS.genre+'<span>'+esc(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+esc(g.releaseDate||'Upcoming')+'</span></div>'
       +'</div>'
       +'<div class="card-actions"><div class="card-actions-left">'+actionBtns+'</div>'
       +'<button class="btn btn-more" data-src="wishlist" data-id="'+g.id+'" onclick="openSheetFromBtn(this)">'+ICONS.external+' More</button>'
@@ -996,6 +1006,7 @@ async function doSearch(append) {
 
   if (!append) {
     srPage = 1; srLastReleased = []; srLastUpcoming = [];
+    gameStore.clear(); gameStoreId = 0;
     resultsEl.innerHTML = '<div class="search-loading"><div class="spinner"></div><div class="loading-text">Searching\u2026</div></div>';
   } else {
     srPage++;
@@ -1027,7 +1038,7 @@ async function doSearch(append) {
     }
     renderSearchResults(srLastReleased, srLastUpcoming, srHasMore);
   } catch(err) {
-    if (!append) resultsEl.innerHTML = '<div class="error-state">Search failed: '+err.message+'<br><br>Check your API key in Settings.</div>';
+    if (!append) resultsEl.innerHTML = '<div class="error-state">Search failed: '+esc(err.message)+'<br><br>Check your API key in Settings.</div>';
     else showToast('Failed to load more');
   }
 }
@@ -1131,10 +1142,10 @@ function buildSearchCard(g, bl, wl, forceUpcoming) {
   return '<div class="sr-card '+extra+'" data-key="'+key+'">'
     +'<div class="card-art">'+artImg(g.art,g.title)+'</div>'
     +'<div class="card-body">'
-      +'<div class="card-top"><div class="card-title">'+g.title+'</div>'+mcH+'</div>'
+      +'<div class="card-top"><div class="card-title">'+esc(g.title)+'</div>'+mcH+'</div>'
       +'<div class="card-meta-block">'
-        +'<div class="card-meta">'+ICONS.platform+'<span>'+platShort(g.platform)+'</span></div>'
-        +'<div class="card-meta">'+ICONS.genre+'<span>'+(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+(g.releaseDate||'TBA')+'</span></div>'
+        +'<div class="card-meta">'+ICONS.platform+'<span>'+esc(platShort(g.platform))+'</span></div>'
+        +'<div class="card-meta">'+ICONS.genre+'<span>'+esc(g.genre||'-')+'</span><span class="meta-sep">&middot;</span>'+ICONS.date+'<span>'+esc(g.releaseDate||'TBA')+'</span></div>'
       +'</div>'
       +'<div class="card-actions"><div class="card-actions-left">'+blBtn+wlBtn+'</div>'
       +'<button class="btn btn-more" onclick="openSheetByKey(\''+key+'\')">'+ICONS.external+' More</button>'
@@ -1225,6 +1236,9 @@ function openSheet(key, g) {
   document.getElementById('sheet-backdrop').classList.add('open');
   document.body.style.overflow = 'hidden';
   const sh = document.getElementById('game-sheet');
+  sh.removeEventListener('touchstart', sheetTouchStart);
+  sh.removeEventListener('touchmove',  sheetTouchMove);
+  sh.removeEventListener('touchend',   sheetTouchEnd);
   sh.addEventListener('touchstart', sheetTouchStart, {passive:true});
   sh.addEventListener('touchmove',  sheetTouchMove,  {passive:true});
   sh.addEventListener('touchend',   sheetTouchEnd,   {passive:true});
@@ -1268,7 +1282,7 @@ function buildSheetBody(g, detail, screenshots) {
   const desc    = rawDesc.replace(/<[^>]+>/g,'').trim();
   if (desc) {
     html += '<div class="sheet-section"><div class="sheet-section-title">About</div>'
-           +'<div class="sheet-desc">'+(desc.length>320?desc.substring(0,320)+'...':desc)+'</div></div>';
+           +'<div class="sheet-desc">'+esc(desc.length>320?desc.substring(0,320)+'...':desc)+'</div></div>';
   }
   if (screenshots.length) {
     html += '<div class="sheet-section"><div class="sheet-section-title">Screenshots</div><div class="sheet-screenshots">';
@@ -1291,13 +1305,13 @@ function buildSheetBody(g, detail, screenshots) {
   if (pubs) items.push(['Publisher', pubs]);
   if (items.length) {
     html += '<div class="sheet-section"><div class="sheet-section-title">Details</div><div class="sheet-meta-grid">';
-    items.forEach(([l,v])=>{ html+='<div class="sheet-meta-item"><div class="sheet-meta-label">'+l+'</div><div class="sheet-meta-value">'+v+'</div></div>'; });
+    items.forEach(([l,v])=>{ html+='<div class="sheet-meta-item"><div class="sheet-meta-label">'+esc(l)+'</div><div class="sheet-meta-value">'+esc(v)+'</div></div>'; });
     html += '</div></div>';
   }
   const stores = detail ? (detail.stores||[]) : [];
   if (stores.length) {
     html += '<div class="sheet-section"><div class="sheet-section-title">Where to Buy</div><div class="sheet-stores">';
-    stores.forEach(s=>{ html+='<a class="sheet-store-btn" href="'+(s.url||'https://'+s.store.domain)+'" target="_blank" rel="noopener">'+ICONS.external+' '+s.store.name+'</a>'; });
+    stores.forEach(s=>{ html+='<a class="sheet-store-btn" href="'+esc(s.url||'https://'+s.store.domain)+'" target="_blank" rel="noopener">'+ICONS.external+' '+esc(s.store.name)+'</a>'; });
     html += '</div></div>';
   }
   if (!html) html = '<div class="sheet-desc" style="color:var(--text-muted);padding:8px 0">No additional details available.</div>';
@@ -1508,10 +1522,10 @@ document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => switchTab(btn.dataset.tab));
 });
 
-document.getElementById('backlog-search').addEventListener('input', renderBacklog);
+document.getElementById('backlog-search').addEventListener('input', debounce(renderBacklog, 200));
 document.getElementById('backlog-status-filter').addEventListener('change', renderBacklog);
 document.getElementById('backlog-sort').addEventListener('change', renderBacklog);
-document.getElementById('wl-search').addEventListener('input', renderWishlist);
+document.getElementById('wl-search').addEventListener('input', debounce(renderWishlist, 200));
 document.getElementById('wl-genre-filter').addEventListener('change', renderWishlist);
 document.getElementById('wl-platform-filter').addEventListener('change', renderWishlist);
 document.getElementById('wl-sort').addEventListener('change', renderWishlist);
